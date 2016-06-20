@@ -1,0 +1,27 @@
+From b9e5ef292a2d26b22b877570404a483e6c280178 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Tue, 31 May 2016 11:53:32 +0200
+Subject: [PATCH] fix-usb-errors
+
+---
+ drivers/usb/phy/phy-mxs-usb.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/usb/phy/phy-mxs-usb.c b/drivers/usb/phy/phy-mxs-usb.c
+index c70c569..e803ab8 100644
+--- a/drivers/usb/phy/phy-mxs-usb.c
++++ b/drivers/usb/phy/phy-mxs-usb.c
+@@ -264,9 +264,7 @@ static bool mxs_phy_get_vbus_status(struct mxs_phy *mxs_phy)
+ 			ANADIG_USB1_VBUS_DET_STAT,
+ 			&vbus_value);
+ 	else if (mxs_phy->port_id == 1)
+-		regmap_read(mxs_phy->regmap_anatop,
+-			ANADIG_USB2_VBUS_DET_STAT,
+-			&vbus_value);
++		vbus_value = BM_ANADIG_USB1_VBUS_DET_STAT_VBUS_VALID;
+ 
+ 	if (vbus_value & BM_ANADIG_USB1_VBUS_DET_STAT_VBUS_VALID)
+ 		return true;
+-- 
+1.9.1
+
