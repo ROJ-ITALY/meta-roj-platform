@@ -1,0 +1,37 @@
+From 2c70dac6b67f02dce331a01bad0796d59e409cdf Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Tue, 28 Jun 2016 09:39:27 +0200
+Subject: [PATCH] remove-cma-region-imx6s
+
+---
+ arch/arm/boot/dts/imx6dl-roj.dtsi | 14 --------------
+ 1 file changed, 14 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6dl-roj.dtsi b/arch/arm/boot/dts/imx6dl-roj.dtsi
+index d3a2df6..5927d5b 100644
+--- a/arch/arm/boot/dts/imx6dl-roj.dtsi
++++ b/arch/arm/boot/dts/imx6dl-roj.dtsi
+@@ -63,20 +63,6 @@
+ 		};
+ 	};
+ 
+-	reserved-memory {
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		ranges;
+-
+-		/* global autoconfigured region for contiguous allocations */
+-		linux,cma {
+-			compatible = "shared-dma-pool";
+-			reusable;
+-			size = <0x14000000>;
+-			linux,cma-default;
+-		};
+-	};
+-
+ 	soc {
+ 		busfreq {
+ 			compatible = "fsl,imx_busfreq";
+-- 
+1.9.1
+

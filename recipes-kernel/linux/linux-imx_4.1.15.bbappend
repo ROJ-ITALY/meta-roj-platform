@@ -20,6 +20,7 @@ SRC_URI_append_mx6sroj = " \
    file://0003-hdmi-patches.patch \
    file://0004-fix-usb-errors.patch \
    file://0005-i210.patch \
+   file://remove-cma-region-imx6s.patch \
    file://defconfig \
 "
 
