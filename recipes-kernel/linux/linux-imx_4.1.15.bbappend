@@ -11,6 +11,9 @@ SRC_URI_append_mx6qroj = " \
    file://0003-hdmi-patches.patch \
    file://0004-fix-usb-errors.patch \
    file://0005-i210.patch \
+   file://0006-add-sn8000-support.patch \
+   file://brcmfmac43362-sdio.bin \
+   file://brcmfmac43362-sdio.txt \
    file://defconfig \
 "
 
@@ -20,7 +23,16 @@ SRC_URI_append_mx6sroj = " \
    file://0003-hdmi-patches.patch \
    file://0004-fix-usb-errors.patch \
    file://0005-i210.patch \
+   file://0006-add-sn8000-support.patch \
    file://remove-cma-region-imx6s.patch \
+   file://brcmfmac43362-sdio.bin \
+   file://brcmfmac43362-sdio.txt \
    file://defconfig \
 "
+do_install_append () {
+	install -d ${D}/lib/firmware/brcm/
+	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.bin ${D}/lib/firmware/brcm/
+	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.txt ${D}/lib/firmware/brcm/
+}
 
+FILES_kernel-firmware-brcmfmac43362-sdio += "/lib/firmware/brcm/"
