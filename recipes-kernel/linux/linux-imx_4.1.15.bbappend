@@ -12,6 +12,7 @@ SRC_URI_append_mx6qroj = " \
    file://0004-fix-usb-errors.patch \
    file://0005-i210.patch \
    file://0006-add-sn8000-support.patch \
+   file://0007-sdio_pwr_en_on.patch \
    file://brcmfmac43362-sdio.bin \
    file://brcmfmac43362-sdio.txt \
    file://defconfig \
@@ -24,6 +25,7 @@ SRC_URI_append_mx6sroj = " \
    file://0004-fix-usb-errors.patch \
    file://0005-i210.patch \
    file://0006-add-sn8000-support.patch \
+   file://0007-sdio_pwr_en_on.patch \
    file://remove-cma-region-imx6s.patch \
    file://brcmfmac43362-sdio.bin \
    file://brcmfmac43362-sdio.txt \
