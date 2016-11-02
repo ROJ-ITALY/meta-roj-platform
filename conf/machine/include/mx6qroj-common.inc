@@ -7,4 +7,6 @@ SERIAL_CONSOLE = "115200 ttymxc1"
 
 MACHINE_FIRMWARE_append_mx6 = " linux-firmware-ath6k"
 
+MACHINE_GSTREAMER_1_0_PLUGIN_mx6q = ""
+
 MACHINE_FEATURES += " pci wifi bluetooth"
