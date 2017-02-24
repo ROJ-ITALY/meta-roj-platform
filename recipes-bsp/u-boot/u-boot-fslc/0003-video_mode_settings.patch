@@ -1,0 +1,25 @@
+From bd325636bcd41747dca44c4696f9de5972243671 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Thu, 27 Oct 2016 09:55:35 +0200
+Subject: [PATCH] video_mode_settings
+
+---
+ include/configs/mx6roj_common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/mx6roj_common.h b/include/configs/mx6roj_common.h
+index eb1ef57..ad07b5e 100644
+--- a/include/configs/mx6roj_common.h
++++ b/include/configs/mx6roj_common.h
+@@ -137,7 +137,7 @@
+ 			"run video_args_${v}; " \
+ 			"setexpr fb $fb + 1; " \
+ 		"done\0" \
+- 	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdev}p${mmcrootpart} rootwait rw\0" \
++ 	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdev}p${mmcrootpart} rootwait rw video=mxcfb0:dev=ldb,800x600M@60,if=RGB24,fbpix=RGB32 video=mxcfb1:dev=hdmi,1920x1080M@60,if=RGB24,fbpix=RGB32\0" \
+ 	"mmcargs=run mmcsetroot;setenv bootargs console=${console},${baudrate} " \
+ 		"root=${mmcroot} " \
+ 		VIDEO_ARGS "\0" \
+-- 
+1.9.1
+

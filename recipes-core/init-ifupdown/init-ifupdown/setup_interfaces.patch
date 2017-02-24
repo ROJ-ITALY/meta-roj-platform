@@ -1,0 +1,56 @@
+From 40443f527400bb022798a5d4f6e711e3fae670ee Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Fri, 20 Jan 2017 14:33:28 +0100
+Subject: [PATCH] setup_interfaces
+
+---
+ interfaces | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/interfaces b/interfaces
+index 0acf4cf..8c7f78f 100644
+--- a/interfaces
++++ b/interfaces
+@@ -5,26 +5,26 @@ auto lo
+ iface lo inet loopback
+ 
+ # Wireless interfaces
+-iface wlan0 inet dhcp
+-	wireless_mode managed
+-	wireless_essid any
+-	wpa-driver wext
+-	wpa-conf /etc/wpa_supplicant.conf
++#iface wlan0 inet dhcp
++#	wireless_mode managed
++#	wireless_essid any
++#	wpa-driver wext
++#	wpa-conf /etc/wpa_supplicant.conf
+ 
+ iface atml0 inet dhcp
+ 
+ # Wired or wireless interfaces
+-auto eth0
+-iface eth0 inet dhcp
+-iface eth1 inet dhcp
++#auto eth0
++#iface eth0 inet dhcp
++#iface eth1 inet dhcp
+ 
+ # Ethernet/RNDIS gadget (g_ether)
+ # ... or on host side, usbnet and random hwaddr
+-iface usb0 inet static
+-	address 192.168.7.2
+-	netmask 255.255.255.0
+-	network 192.168.7.0
+-	gateway 192.168.7.1
++#iface usb0 inet static
++#	address 192.168.7.2
++#	netmask 255.255.255.0
++#	network 192.168.7.0
++#	gateway 192.168.7.1
+ 
+ # Bluetooth networking
+ iface bnep0 inet dhcp
+-- 
+1.9.1
+
