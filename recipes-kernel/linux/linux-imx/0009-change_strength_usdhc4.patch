@@ -1,0 +1,43 @@
+From 823343ec300fdd0ae94afeb7aad5a6467053b9ac Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Fri, 23 Jun 2017 08:25:48 +0200
+Subject: [PATCH] change_strength_usdhc4
+
+---
+ arch/arm/boot/dts/imx6qdl-roj-base.dtsi | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/arch/arm/boot/dts/imx6qdl-roj-base.dtsi b/arch/arm/boot/dts/imx6qdl-roj-base.dtsi
+index 805bf82..e8118d5 100644
+--- a/arch/arm/boot/dts/imx6qdl-roj-base.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-roj-base.dtsi
+@@ -1613,16 +1613,16 @@
+ 	usdhc4 {
+ 		pinctrl_usdhc4_1: usdhc4grp-1 {
+ 			fsl,pins = <
+-				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x17059
+-				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x10059
+-				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x17059
+-				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x17059
+-				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x17059
+-				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x17059
+-				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x17059
+-				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x17059
+-				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x17059
+-				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x17059
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x17071
++				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x10071
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x17071
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x17071
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x17071
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x17071
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x17071
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x17071
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x17071
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x17071
+ 				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x17059
+ 				MX6QDL_PAD_EIM_D18__GPIO3_IO18   0x13069
+ 			>;
+-- 
+1.9.1
+
