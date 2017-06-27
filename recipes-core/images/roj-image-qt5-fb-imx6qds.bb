@@ -29,4 +29,5 @@ IMAGE_INSTALL = " \
 	imx-vpu \
 	imx-gpu-viv \
 	test-smarc \
+	spitools \
 "
