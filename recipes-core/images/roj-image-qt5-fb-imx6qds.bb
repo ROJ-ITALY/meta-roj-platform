@@ -30,4 +30,6 @@ IMAGE_INSTALL = " \
 	imx-gpu-viv \
 	test-smarc \
 	spitools \
+	alsa-utils-aplay \
+	alsa-utils-speakertest \
 "
