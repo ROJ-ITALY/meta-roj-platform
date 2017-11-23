@@ -1,7 +1,7 @@
-From 5ea4563f9625058c624a452c117095515185d83d Mon Sep 17 00:00:00 2001
+From ec26da1f37d00a3a8cba37e43936f22993559f15 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Tue, 31 May 2016 14:02:45 +0200
-Subject: [PATCH] i210
+Date: Tue, 7 Nov 2017 14:04:54 +0100
+Subject: [PATCH] i210-support
 
 ---
  drivers/net/ethernet/intel/igb/e1000_82575.c | 1 +
@@ -10,10 +10,10 @@ Subject: [PATCH] i210
  3 files changed, 3 insertions(+)
 
 diff --git a/drivers/net/ethernet/intel/igb/e1000_82575.c b/drivers/net/ethernet/intel/igb/e1000_82575.c
-index 0f69ef8..b23dfb2 100644
+index a61447f..198b5f6 100644
 --- a/drivers/net/ethernet/intel/igb/e1000_82575.c
 +++ b/drivers/net/ethernet/intel/igb/e1000_82575.c
-@@ -561,6 +561,7 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
+@@ -610,6 +610,7 @@ static s32 igb_get_invariants_82575(struct e1000_hw *hw)
  	case E1000_DEV_ID_I350_SGMII:
  		mac->type = e1000_i350;
  		break;
@@ -22,10 +22,10 @@ index 0f69ef8..b23dfb2 100644
  	case E1000_DEV_ID_I210_FIBER:
  	case E1000_DEV_ID_I210_SERDES:
 diff --git a/drivers/net/ethernet/intel/igb/e1000_hw.h b/drivers/net/ethernet/intel/igb/e1000_hw.h
-index 2003b37..565d522 100644
+index 2fb2213..915abba 100644
 --- a/drivers/net/ethernet/intel/igb/e1000_hw.h
 +++ b/drivers/net/ethernet/intel/igb/e1000_hw.h
-@@ -59,6 +59,7 @@ struct e1000_hw;
+@@ -59,6 +59,7 @@
  #define E1000_DEV_ID_I350_SERDES		0x1523
  #define E1000_DEV_ID_I350_SGMII			0x1524
  #define E1000_DEV_ID_I210_COPPER		0x1533
@@ -34,10 +34,10 @@ index 2003b37..565d522 100644
  #define E1000_DEV_ID_I210_SERDES		0x1537
  #define E1000_DEV_ID_I210_SGMII			0x1538
 diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-index 7dfbcde..1bc296d 100644
+index 9affd7c..12c9220 100644
 --- a/drivers/net/ethernet/intel/igb/igb_main.c
 +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -78,6 +78,7 @@ static const struct pci_device_id igb_pci_tbl[] = {
+@@ -79,6 +79,7 @@
  	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I354_BACKPLANE_2_5GBPS) },
  	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I211_COPPER), board_82575 },
  	{ PCI_VDEVICE(INTEL, E1000_DEV_ID_I210_COPPER), board_82575 },

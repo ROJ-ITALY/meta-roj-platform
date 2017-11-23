@@ -1,0 +1,111 @@
+From 702df07b2f1a1d9b40f842c65d0bcdb434cc7308 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Wed, 22 Nov 2017 11:44:08 +0100
+Subject: [PATCH] spi-flash-support
+
+---
+ arch/arm/boot/dts/imx6dl-enuc.dts | 34 ++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6q-enuc.dts  | 34 ++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6dl-enuc.dts b/arch/arm/boot/dts/imx6dl-enuc.dts
+index 69b6d51..30ebf14 100644
+--- a/arch/arm/boot/dts/imx6dl-enuc.dts
++++ b/arch/arm/boot/dts/imx6dl-enuc.dts
+@@ -67,6 +67,24 @@
+ 		};
+ 	};
+ 
++	/*SPI0*/
++	ecspi4 {
++		pinctrl_ecspi4_cs_1: ecspi4_cs_grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x100b1
++				MX6QDL_PAD_EIM_A25__GPIO5_IO02 0x100b1
++			>;
++		};
++
++		pinctrl_ecspi4_1: ecspi4grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D22__ECSPI4_MISO 0x100b1
++				MX6QDL_PAD_EIM_D28__ECSPI4_MOSI 0x100b1
++				MX6QDL_PAD_EIM_D21__ECSPI4_SCLK 0x100b1
++			>;
++		};
++	};
++
+ };
+ 
+ &regulators {
+@@ -90,3 +108,19 @@
+ 			compatible = "brcm,bcm4329-fmac";
+ 		};	
+ };
++
++&ecspi4 {
++	status = "okay";
++
++	flash@0 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <0>;
++	};
++
++	flash@1 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <1>;
++	};
++};
+diff --git a/arch/arm/boot/dts/imx6q-enuc.dts b/arch/arm/boot/dts/imx6q-enuc.dts
+index c038551..88d4a90 100644
+--- a/arch/arm/boot/dts/imx6q-enuc.dts
++++ b/arch/arm/boot/dts/imx6q-enuc.dts
+@@ -67,6 +67,24 @@
+ 		};
+ 	};
+ 
++	/*SPI0*/
++	ecspi4 {
++		pinctrl_ecspi4_cs_1: ecspi4_cs_grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x100b1
++				MX6QDL_PAD_EIM_A25__GPIO5_IO02 0x100b1
++			>;
++		};
++
++		pinctrl_ecspi4_1: ecspi4grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_EIM_D22__ECSPI4_MISO 0x100b1
++				MX6QDL_PAD_EIM_D28__ECSPI4_MOSI 0x100b1
++				MX6QDL_PAD_EIM_D21__ECSPI4_SCLK 0x100b1
++			>;
++		};
++	};
++
+ };
+ 
+ &regulators {
+@@ -90,3 +108,19 @@
+ 			compatible = "brcm,bcm4329-fmac";
+ 		};	
+ };
++
++&ecspi4 {
++	status = "okay";
++
++	flash@0 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <0>;
++	};
++
++	flash@1 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <1>;
++	};
++};
+-- 
+2.7.4
+

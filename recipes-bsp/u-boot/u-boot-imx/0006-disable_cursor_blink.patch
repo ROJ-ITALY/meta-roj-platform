@@ -1,0 +1,25 @@
+From 7c2af68417e30a958412e1a6d660e63be763856f Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Wed, 22 Nov 2017 12:00:02 +0100
+Subject: [PATCH] disable_cursor_blink
+
+---
+ include/configs/mx6smarc_common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
+index 7379e54..c56fbc1 100644
+--- a/include/configs/mx6smarc_common.h
++++ b/include/configs/mx6smarc_common.h
+@@ -161,7 +161,7 @@
+ 		"fi\0" \
+ 	EMMC_ENV	  \
+ 	"smp=" SYS_NOSMP "\0"\
+-	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdevk}p${mmcrootpart} rootwait rw video=mxcfb0:dev=ldb,800x600M@60,if=RGB24,fbpix=RGB32 video=mxcfb1:dev=hdmi,1920x1080M@60,if=RGB24,fbpix=RGB32 consoleblank=0\0" \
++	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdevk}p${mmcrootpart} rootwait rw video=mxcfb0:dev=ldb,800x600M@60,if=RGB24,fbpix=RGB32 video=mxcfb1:dev=hdmi,1920x1080M@60,if=RGB24,fbpix=RGB32 consoleblank=0 vt.global_cursor_default=0\0" \
+ 	"mmcargs=run mmcsetroot;setenv bootargs console=${console},${baudrate} ${smp} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript=" \
+-- 
+2.7.4
+

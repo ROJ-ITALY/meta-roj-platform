@@ -1,0 +1,181 @@
+From 2c714de9275c60d288bd4a4adf7f10500b5803ce Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Tue, 21 Nov 2017 14:52:32 +0100
+Subject: [PATCH] add-sn8000-support
+
+---
+ arch/arm/boot/dts/imx6dl-enuc.dts | 76 +++++++++++++++++++++++++++++++++++++++
+ arch/arm/boot/dts/imx6q-enuc.dts  | 76 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 152 insertions(+)
+
+diff --git a/arch/arm/boot/dts/imx6dl-enuc.dts b/arch/arm/boot/dts/imx6dl-enuc.dts
+index e3a6491..69b6d51 100644
+--- a/arch/arm/boot/dts/imx6dl-enuc.dts
++++ b/arch/arm/boot/dts/imx6dl-enuc.dts
+@@ -14,3 +14,79 @@
+ 	model = "Roj i.MX6 DualLite/Solo SMARC + eNUC (demokit)";
+ 	compatible = "fsl,imx6dl-enuc", "fsl,imx6dl";
+ };
++
++&iomuxc {
++
++	usdhc4 {
++		pinctrl_usdhc4_1: usdhc4grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x17071
++				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x17071
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x17071
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x17071
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x17071
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x17071
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x17071
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x17071
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x17071
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x17071
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x17071
++			>;
++		};
++
++		pinctrl_usdhc4_1_100mhz: usdhc4grp-1-100mhz {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x170B9
++                MX6QDL_PAD_SD4_CLK__SD4_CLK     0x100B9
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x170B9
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x170B9
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x170B9
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x170B9
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x170B9
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x170B9
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x170B9
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x170B9
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x170B9
++			>;
++		};
++
++		pinctrl_usdhc4_1_200mhz: usdhc4grp-1-200mhz {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x170F9
++				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x100F9
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x170F9
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x170F9
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x170F9
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x170F9
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x170F9
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x170F9
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x170F9
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x170F9
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x170F9
++			>;
++		};
++	};
++
++};
++
++&regulators {
++
++		/*wifi regulator*/
++		reg_wlreg_on: wlreg_on {
++			compatible = "regulator-fixed";
++			regulator-name = "wlreg_on";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++			startup-delay-us = <350000>;
++			gpio = <&gpio3 18 GPIO_ACTIVE_LOW>;
++			enable-active-low;
++		};
++
++};
++
++&usdhc4 {
++		vmmc-supply = <&reg_wlreg_on>;
++		brcmf: bcrmf@1 {
++			compatible = "brcm,bcm4329-fmac";
++		};	
++};
+diff --git a/arch/arm/boot/dts/imx6q-enuc.dts b/arch/arm/boot/dts/imx6q-enuc.dts
+index 445021f..c038551 100644
+--- a/arch/arm/boot/dts/imx6q-enuc.dts
++++ b/arch/arm/boot/dts/imx6q-enuc.dts
+@@ -14,3 +14,79 @@
+ 	model = "Roj i.MX6 Quad SMARC + eNUC (demokit)";
+ 	compatible = "fsl,imx6q-enuc", "fsl,imx6q";
+ };
++
++&iomuxc {
++
++	usdhc4 {
++		pinctrl_usdhc4_1: usdhc4grp-1 {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x17071
++				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x17071
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x17071
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x17071
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x17071
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x17071
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x17071
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x17071
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x17071
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x17071
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x17071
++			>;
++		};
++
++		pinctrl_usdhc4_1_100mhz: usdhc4grp-1-100mhz {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x170B9
++                MX6QDL_PAD_SD4_CLK__SD4_CLK     0x100B9
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x170B9
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x170B9
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x170B9
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x170B9
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x170B9
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x170B9
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x170B9
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x170B9
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x170B9
++			>;
++		};
++
++		pinctrl_usdhc4_1_200mhz: usdhc4grp-1-200mhz {
++			fsl,pins = <
++				MX6QDL_PAD_SD4_CMD__SD4_CMD     0x170F9
++				MX6QDL_PAD_SD4_CLK__SD4_CLK     0x100F9
++				MX6QDL_PAD_SD4_DAT0__SD4_DATA0  0x170F9
++				MX6QDL_PAD_SD4_DAT1__SD4_DATA1  0x170F9
++				MX6QDL_PAD_SD4_DAT2__SD4_DATA2  0x170F9
++				MX6QDL_PAD_SD4_DAT3__SD4_DATA3  0x170F9
++				MX6QDL_PAD_SD4_DAT4__SD4_DATA4  0x170F9
++				MX6QDL_PAD_SD4_DAT5__SD4_DATA5  0x170F9
++				MX6QDL_PAD_SD4_DAT6__SD4_DATA6  0x170F9
++				MX6QDL_PAD_SD4_DAT7__SD4_DATA7  0x170F9
++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x170F9
++			>;
++		};
++	};
++
++};
++
++&regulators {
++
++		/*wifi regulator*/
++		reg_wlreg_on: wlreg_on {
++			compatible = "regulator-fixed";
++			regulator-name = "wlreg_on";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++			startup-delay-us = <350000>;
++			gpio = <&gpio3 18 GPIO_ACTIVE_LOW>;
++			enable-active-low;
++		};
++
++};
++
++&usdhc4 {
++		vmmc-supply = <&reg_wlreg_on>;
++		brcmf: bcrmf@1 {
++			compatible = "brcm,bcm4329-fmac";
++		};	
++};
+-- 
+2.7.4
+

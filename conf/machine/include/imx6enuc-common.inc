@@ -1,4 +1,4 @@
-# Provides the i.MX6 ROJ SD common settings
+# Provides the i.MX6 demokit (smarc+enuc) common settings
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa9.inc
@@ -7,6 +7,5 @@ SERIAL_CONSOLE = "115200 ttymxc1"
 
 MACHINE_FIRMWARE_append_mx6 = " linux-firmware-ath6k"
 
-MACHINE_GSTREAMER_1_0_PLUGIN_mx6q = ""
-
 MACHINE_FEATURES += " pci wifi bluetooth"
+

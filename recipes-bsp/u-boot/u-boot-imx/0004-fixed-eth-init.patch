@@ -1,0 +1,75 @@
+From 0a33c9b1e638629487b02cd4121fc3f07fca4575 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Tue, 21 Nov 2017 09:49:07 +0100
+Subject: [PATCH] fixed-eth-init
+
+---
+ board/freescale/mx6qsmarc/mx6qsmarc.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
+
+diff --git a/board/freescale/mx6qsmarc/mx6qsmarc.c b/board/freescale/mx6qsmarc/mx6qsmarc.c
+index 06f5ed7..6c3a549 100644
+--- a/board/freescale/mx6qsmarc/mx6qsmarc.c
++++ b/board/freescale/mx6qsmarc/mx6qsmarc.c
+@@ -583,6 +583,14 @@ static void setup_fec(void)
+ 
+ int board_eth_init(bd_t *bis)
+ {
++	// Reset PHY and ensure RX_DV is pulled high to enable REF_CLK
++	gpio_request(IMX_GPIO_NR(1, 4), "phy_reset");
++	gpio_direction_output(IMX_GPIO_NR(1,4),0);
++	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL,ENET_PAD_CTRL)); // CLK125_EN strap pin
++	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RXC__RGMII_RXC,ENET_PAD_CTRL)); // PHYAD2 strap pin
++	
++	udelay(10000);
++	setup_fec();
+ 	setup_iomux_enet();
+ 
+ 	return cpu_eth_init(bis);
+@@ -881,20 +889,8 @@ int board_ehci_power(int port, int on)
+ 
+ int board_early_init_f(void)
+ {
+-	// assert carrier_pwr_ok to allow UART to be visible
+-	gpio_direction_output(IMX_GPIO_NR(4, 5), 1); 
+-	// Reset PHY and ensure RX_DV is pulled high to enable REF_CLK
+-	gpio_request(IMX_GPIO_NR(1, 4), "phy_reset");
+-	gpio_direction_output(IMX_GPIO_NR(1,4),0);
+-	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL,ENET_PAD_CTRL));
+-        imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RXC__RGMII_RXC,ENET_PAD_CTRL));
+-
+ 	setup_iomux_uart();
+ 
+-#ifdef CONFIG_VIDEO_IPUV3
+-		setup_display();
+-#endif
+-
+ #ifdef CONFIG_MTD_NOR_FLASH
+ 	eim_clk_setup();
+ #endif
+@@ -1013,6 +1009,10 @@ int board_init(void)
+ 	}
+ #endif
+ 
++#ifdef CONFIG_VIDEO_IPUV3
++		setup_display();
++#endif
++
+ #ifdef CONFIG_MXC_SPI
+ 	setup_spinor();
+ #endif
+@@ -1029,9 +1029,11 @@ int board_init(void)
+ 	setup_iomux_eimnor();
+ #endif
+ 
++#if 0
+ #ifdef CONFIG_FEC_MXC
+ 	setup_fec();
+ #endif
++#endif
+ 
+ #ifdef CONFIG_USB_EHCI_MX6
+ #ifndef CONFIG_DM_USB
+-- 
+2.7.4
+
