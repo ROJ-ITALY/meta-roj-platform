@@ -1,0 +1,24 @@
+From 90c9bd64e6f6c1ec9d415914ef7fabe345bb93fa Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Mon, 12 Mar 2018 15:33:54 +0100
+Subject: [PATCH] fix usb hub init
+
+---
+ board/freescale/mx6qsmarc/mx6qsmarc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/board/freescale/mx6qsmarc/mx6qsmarc.c b/board/freescale/mx6qsmarc/mx6qsmarc.c
+index 7dd0622..49a2e6f 100644
+--- a/board/freescale/mx6qsmarc/mx6qsmarc.c
++++ b/board/freescale/mx6qsmarc/mx6qsmarc.c
+@@ -949,6 +949,7 @@ int board_init(void)
+     gpio_direction_output(IMX_GPIO_NR(7,8),0);
+     udelay(1);
+     gpio_direction_output(IMX_GPIO_NR(7,8),1);
++    udelay(600);
+     /* USB HUB initialization */
+     I2C_SET_BUS(2);
+     i2c_write(0x2c,0,1,usb_init_blob, sizeof(usb_init_blob));
+-- 
+2.7.4
+
