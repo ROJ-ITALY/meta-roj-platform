@@ -18,6 +18,9 @@ IMAGE_INSTALL_append = " kernel-firmware-brcmfmac43362-sdio"
 # Add test-smarc
 IMAGE_INSTALL_append = " test-smarc"
 
+# Add image version
+IMAGE_INSTALL_append = " image-version"
+
 # Add python3
 IMAGE_INSTALL_append = " python3 python3-argparse \
 			python3-subprocess \
@@ -29,5 +32,3 @@ IMAGE_INSTALL_append = " python3 python3-argparse \
 
 # Rootfs on tar
 IMAGE_FSTYPES = "tar"
-
-
