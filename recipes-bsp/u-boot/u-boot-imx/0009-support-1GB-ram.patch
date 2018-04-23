@@ -1,0 +1,205 @@
+From f4998e3a763c99643287f812dd264975cb18ba6b Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Mon, 23 Apr 2018 10:00:47 +0200
+Subject: [PATCH] support 1GB ram
+
+---
+ board/freescale/mx6qsmarc/mx6dl_1GB.cfg | 119 ++++++++++++++++++++++++++++++++
+ configs/mx6dlenuc_1GB_defconfig         |  59 ++++++++++++++++
+ 2 files changed, 178 insertions(+)
+ create mode 100644 board/freescale/mx6qsmarc/mx6dl_1GB.cfg
+ create mode 100644 configs/mx6dlenuc_1GB_defconfig
+
+diff --git a/board/freescale/mx6qsmarc/mx6dl_1GB.cfg b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
+new file mode 100644
+index 0000000..36a9acc
+--- /dev/null
++++ b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
+@@ -0,0 +1,119 @@
++/*
++ * Copyright (C) 2013 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer doc/README.imximage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++/* image version */
++
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of
++ * spi, sd (the board has no nand neither onenand)
++ */
++BOOT_FROM	sd
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *	Addr-type register length (1,2 or 4 bytes)
++ *	Address	  absolute address of the register
++ *	value	  value to be stored in the register
++ */
++DATA 4 0x020e0774 0x000C0000
++DATA 4 0x020e0754 0x00000000
++DATA 4 0x020e04ac 0x00000028
++DATA 4 0x020e04b0 0x00000028
++DATA 4 0x020e0464 0x00000028
++DATA 4 0x020e0490 0x00000028
++DATA 4 0x020e074c 0x00000028
++DATA 4 0x020e0494 0x00000028
++DATA 4 0x020e04a0 0x00000000
++DATA 4 0x020e04b4 0x00000028
++DATA 4 0x020e04b8 0x00000028
++DATA 4 0x020e076c 0x00000028
++DATA 4 0x020e0750 0x00020000
++DATA 4 0x020e04bc 0x00000028
++DATA 4 0x020e04c0 0x00000028
++DATA 4 0x020e04c4 0x00000028
++DATA 4 0x020e04c8 0x00000028
++//DATA 4 0x020e04cc 0x00000028
++//DATA 4 0x020e04d0 0x00000028
++//DATA 4 0x020e04d4 0x00000028
++//DATA 4 0x020e04d8 0x00000028
++DATA 4 0x020e0760 0x00020000
++DATA 4 0x020e0764 0x00000028
++DATA 4 0x020e0770 0x00000028
++DATA 4 0x020e0778 0x00000028
++DATA 4 0x020e077c 0x00000028
++//DATA 4 0x020e0780 0x00000028
++//DATA 4 0x020e0784 0x00000028
++//DATA 4 0x020e078c 0x00000028
++//DATA 4 0x020e0748 0x00000028
++DATA 4 0x020e0470 0x00000028
++DATA 4 0x020e0474 0x00000028
++DATA 4 0x020e0478 0x00000028
++DATA 4 0x020e047c 0x00000028
++//DATA 4 0x020e0480 0x00000028
++//DATA 4 0x020e0484 0x00000028
++//DATA 4 0x020e0488 0x00000028
++//DATA 4 0x020e048c 0x00000028
++DATA 4 0x021b0800 0xA1390003
++DATA 4 0x021b080c 0x004C0053
++DATA 4 0x021b0810 0x003E0043
++DATA 4 0x021b083c 0x02440244
++DATA 4 0x021b0840 0x02280228
++DATA 4 0x021b0848 0x4A484E4C
++DATA 4 0x021b0850 0x36382E2E
++DATA 4 0x021b081c 0x33333333
++DATA 4 0x021b0820 0x33333333
++DATA 4 0x021b0824 0x33333333
++DATA 4 0x021b0828 0x33333333
++DATA 4 0x021b08b8 0x00000800
++DATA 4 0x021b0004 0x0002002D
++DATA 4 0x021b0008 0x00333040
++DATA 4 0x021b000c 0x676B52F3
++DATA 4 0x021b0010 0xB66D8B63
++DATA 4 0x021b0014 0x01FF00DB
++DATA 4 0x021b0018 0x00011740
++DATA 4 0x021b001c 0x00008000
++DATA 4 0x021b002c 0x000026D2
++DATA 4 0x021b0030 0x006B1023
++DATA 4 0x021b0040 0x00000027
++DATA 4 0x021b0000 0x84190000
++DATA 4 0x021b001c 0x02008032
++DATA 4 0x021b001c 0x00008033
++DATA 4 0x021b001c 0x00408031
++DATA 4 0x021b001c 0x15208030
++DATA 4 0x021b001c 0x04008040
++DATA 4 0x021b0020 0x00005800
++DATA 4 0x021b0818 0x00011117
++/*DATA 4 0x021b4818 0x00022227*/
++DATA 4 0x021b0004 0x0002556D
++DATA 4 0x021b0404 0x00011006
++DATA 4 0x021b001c 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4 0x020c4068 0x00C03F3F
++DATA 4 0x020c406c 0x0030FC03
++DATA 4 0x020c4070 0x0FFFC000
++DATA 4 0x020c4074 0x3FF00000
++DATA 4 0x020c4078 0xFFFFF300
++DATA 4 0x020c407c 0x0F0000C3
++DATA 4 0x020c4080 0x00000FFF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4 0x020e0010 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4 0x020e0018 0x007F007F
++DATA 4 0x020e001c 0x007F007F
+diff --git a/configs/mx6dlenuc_1GB_defconfig b/configs/mx6dlenuc_1GB_defconfig
+new file mode 100644
+index 0000000..98a0b5b
+--- /dev/null
++++ b/configs/mx6dlenuc_1GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/mx6dl_1GB.cfg,MX6DL"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
+-- 
+2.7.4
+
