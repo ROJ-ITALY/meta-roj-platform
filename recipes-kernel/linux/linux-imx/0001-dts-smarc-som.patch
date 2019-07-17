@@ -1111,7 +1111,7 @@ index 0000000..47239e8
 +};
 +
 +&vpu {
-+	status = "okay";
++	status = "disabled";
 +};
 -- 
 1.9.1
