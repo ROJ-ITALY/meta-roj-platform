@@ -35,6 +35,10 @@ IMAGE_INSTALL_append = " qtbase \
 			qtmultimedia-qmlplugins \
 			qtmultimedia-examples \
 			"
+
+# Add Oracle Java
+IMAGE_INSTALL_append = " oracle-jse-jre-headful "
+
 # Add icon to run qml media player
 IMAGE_INSTALL_append = " qml-media-player"
 
