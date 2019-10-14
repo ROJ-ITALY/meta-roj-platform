@@ -1,10 +1,11 @@
 # ROJ
 
-DESCRIPTION = "kernel for smarc+enuc platform"
+DESCRIPTION = "kernel for Roj Demokit (smarc+enuc platform)"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
-DO_CONFIG_V7_COPY_mx6 = "no"
+# Override LOCALVERSION variable by NXP recipe (fixed problem ipk)
+LOCALVERSION = "-1.0.0"
 
 SRC_URI_append = " \
 	file://0001-dts-smarc-som.patch \
@@ -15,6 +16,7 @@ SRC_URI_append = " \
 	file://brcmfmac43362-sdio.bin \
 	file://brcmfmac43362-sdio.txt \
 	"
+
 SRC_URI_append_imx6qenuc = " \
 	file://defconfig \
 	"
@@ -22,6 +24,9 @@ SRC_URI_append_imx6qenuc = " \
 SRC_URI_append_imx6soloenuc = " \
 	file://defconfig \
 	"
+
+# Using custom kernel configuration
+deltask copy_defconfig
 
 do_install_append () {
 	install -d ${D}/lib/firmware/brcm/
