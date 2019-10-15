@@ -1,44 +1,35 @@
-From b5aa6c572ceeea3f0400185f0f735ca289fb856e Mon Sep 17 00:00:00 2001
+From ee4718b1a42e18eac2508434288b84664314c87b Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Thu, 16 Nov 2017 11:25:14 +0100
+Date: Mon, 14 Oct 2019 15:25:49 +0200
 Subject: [PATCH] enuc-base-support
 
----
- arch/arm/dts/Makefile                 |  2 ++
- arch/arm/dts/imx6dl-enuc.dts          | 16 ++++++++++
- arch/arm/dts/imx6q-enuc.dts           | 16 ++++++++++
- board/freescale/mx6qsmarc/MAINTAINERS |  2 ++
- configs/mx6dlenuc_defconfig           | 59 +++++++++++++++++++++++++++++++++++
- configs/mx6qenuc_defconfig            | 59 +++++++++++++++++++++++++++++++++++
- 6 files changed, 154 insertions(+)
- create mode 100644 arch/arm/dts/imx6dl-enuc.dts
- create mode 100644 arch/arm/dts/imx6q-enuc.dts
- create mode 100644 configs/mx6dlenuc_defconfig
- create mode 100644 configs/mx6qenuc_defconfig
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index da89c23..d0873d2 100644
+index 67dca8a6..02b485b2 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -331,6 +331,7 @@ dtb-$(CONFIG_MX6) += imx6ul-14x14-ddr3-arm2.dtb \
- 	imx6sll-lpddr3-arm2-ecspi.dtb \
- 	imx6sll-evk.dtb \
- 	imx6dl-arm2.dtb \
-+	imx6dl-enuc.dtb \
- 	imx6dl-icore.dtb \
- 	imx6dl-icore-rqs.dtb \
+@@ -503,14 +503,16 @@ dtb-$(CONFIG_MX6Q) += \
+ 	imx6q-sabreauto-gpmi-weim.dtb \
+ 	imx6q-sabresd.dtb \
+ 	imx6q-arm2.dtb \
+-	imx6q-pop-arm2.dtb
++	imx6q-pop-arm2.dtb \
++	imx6q-enuc.dtb
+ 
+ dtb-$(CONFIG_MX6DL) += \
  	imx6dl-sabreauto.dtb \
-@@ -338,6 +339,7 @@ dtb-$(CONFIG_MX6) += imx6ul-14x14-ddr3-arm2.dtb \
+ 	imx6dl-sabreauto-ecspi.dtb \
  	imx6dl-sabreauto-gpmi-weim.dtb \
  	imx6dl-sabresd.dtb \
- 	imx6q-arm2.dtb \
-+	imx6q-enuc.dtb \
- 	imx6q-pop-arm2.dtb \
- 	imx6q-icore.dtb \
- 	imx6q-icore-rqs.dtb \
+-	imx6dl-arm2.dtb
++	imx6dl-arm2.dtb \
++	imx6dl-enuc.dtb
+ 
+ dtb-$(CONFIG_MX6S) += \
+ 	imx6dl-sabreauto.dtb \
 diff --git a/arch/arm/dts/imx6dl-enuc.dts b/arch/arm/dts/imx6dl-enuc.dts
 new file mode 100644
-index 0000000..e3a6491
+index 00000000..e3a64914
 --- /dev/null
 +++ b/arch/arm/dts/imx6dl-enuc.dts
 @@ -0,0 +1,16 @@
@@ -60,7 +51,7 @@ index 0000000..e3a6491
 +};
 diff --git a/arch/arm/dts/imx6q-enuc.dts b/arch/arm/dts/imx6q-enuc.dts
 new file mode 100644
-index 0000000..445021f
+index 00000000..445021fd
 --- /dev/null
 +++ b/arch/arm/dts/imx6q-enuc.dts
 @@ -0,0 +1,16 @@
@@ -81,7 +72,7 @@ index 0000000..445021f
 +	compatible = "fsl,imx6q-enuc", "fsl,imx6q";
 +};
 diff --git a/board/freescale/mx6qsmarc/MAINTAINERS b/board/freescale/mx6qsmarc/MAINTAINERS
-index 55aedf5..a700564 100644
+index 55aedf57..a7005649 100644
 --- a/board/freescale/mx6qsmarc/MAINTAINERS
 +++ b/board/freescale/mx6qsmarc/MAINTAINERS
 @@ -3,3 +3,5 @@ M:	Stefano Gurrieri <stefano.gurrieri@roj.com>
@@ -90,9 +81,74 @@ index 55aedf5..a700564 100644
  F:	include/configs/mx6qsmarc.h
 +F:	configs/mx6dlenuc_defconfig
 +F:	configs/mx6qenuc_defconfig
+diff --git a/configs/mx6dlenuc_1GB_defconfig b/configs/mx6dlenuc_1GB_defconfig
+new file mode 100644
+index 00000000..98a0b5b8
+--- /dev/null
++++ b/configs/mx6dlenuc_1GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/mx6dl_1GB.cfg,MX6DL"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
 diff --git a/configs/mx6dlenuc_defconfig b/configs/mx6dlenuc_defconfig
 new file mode 100644
-index 0000000..28d0d74
+index 00000000..f12c10cd
 --- /dev/null
 +++ b/configs/mx6dlenuc_defconfig
 @@ -0,0 +1,59 @@
@@ -155,9 +211,74 @@ index 0000000..28d0d74
 +CONFIG_DM_REGULATOR_GPIO=y
 +# CONFIG_DM_ETH is not set
 +CONFIG_DM_USB=y
+diff --git a/configs/mx6qenuc_2GB_defconfig b/configs/mx6qenuc_2GB_defconfig
+new file mode 100644
+index 00000000..779d2c64
+--- /dev/null
++++ b/configs/mx6qenuc_2GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/imximage_2GB.cfg,MX6Q"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6q-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
 diff --git a/configs/mx6qenuc_defconfig b/configs/mx6qenuc_defconfig
 new file mode 100644
-index 0000000..05a9dc3
+index 00000000..866aca22
 --- /dev/null
 +++ b/configs/mx6qenuc_defconfig
 @@ -0,0 +1,59 @@
@@ -221,5 +342,5 @@ index 0000000..05a9dc3
 +# CONFIG_DM_ETH is not set
 +CONFIG_DM_USB=y
 -- 
-2.7.4
+2.17.1
 

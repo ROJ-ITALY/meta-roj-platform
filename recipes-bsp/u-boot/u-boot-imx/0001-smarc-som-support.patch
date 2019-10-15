@@ -1,63 +1,12 @@
-From 46ddd9ad9648c59a6da2635dbc9ba36cff037271 Mon Sep 17 00:00:00 2001
+From 601da128f47da4fb251e65aba95a197c8a21e365 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Mon, 6 Nov 2017 15:48:58 +0100
+Date: Mon, 14 Oct 2019 15:05:03 +0200
 Subject: [PATCH] smarc-som-support
 
----
- arch/arm/cpu/armv7/mx6/Kconfig         |    8 +
- arch/arm/dts/imx6dl-smarc.dtsi         |   42 +
- arch/arm/dts/imx6q-smarc.dtsi          |   56 ++
- arch/arm/dts/imx6qdl-smarc.dtsi        | 1018 ++++++++++++++++++++++++
- board/freescale/mx6qsmarc/Kconfig      |   17 +
- board/freescale/mx6qsmarc/MAINTAINERS  |    5 +
- board/freescale/mx6qsmarc/Makefile     |    9 +
- board/freescale/mx6qsmarc/imximage.cfg |  132 ++++
- board/freescale/mx6qsmarc/mx6dl.cfg    |  119 +++
- board/freescale/mx6qsmarc/mx6qsmarc.c  | 1353 ++++++++++++++++++++++++++++++++
- include/configs/mx6qsmarc.h            |   64 ++
- include/configs/mx6smarc_common.h      |  400 ++++++++++
- 12 files changed, 3223 insertions(+)
- create mode 100644 arch/arm/dts/imx6dl-smarc.dtsi
- create mode 100644 arch/arm/dts/imx6q-smarc.dtsi
- create mode 100644 arch/arm/dts/imx6qdl-smarc.dtsi
- create mode 100644 board/freescale/mx6qsmarc/Kconfig
- create mode 100644 board/freescale/mx6qsmarc/MAINTAINERS
- create mode 100644 board/freescale/mx6qsmarc/Makefile
- create mode 100644 board/freescale/mx6qsmarc/imximage.cfg
- create mode 100644 board/freescale/mx6qsmarc/mx6dl.cfg
- create mode 100644 board/freescale/mx6qsmarc/mx6qsmarc.c
- create mode 100644 include/configs/mx6qsmarc.h
- create mode 100644 include/configs/mx6smarc_common.h
 
-diff --git a/arch/arm/cpu/armv7/mx6/Kconfig b/arch/arm/cpu/armv7/mx6/Kconfig
-index a3bb47e..ecda0ce 100644
---- a/arch/arm/cpu/armv7/mx6/Kconfig
-+++ b/arch/arm/cpu/armv7/mx6/Kconfig
-@@ -203,6 +203,13 @@ config TARGET_MX6QSABREAUTO
- 	select DM_THERMAL
- 	select BOARD_EARLY_INIT_F
- 
-+config TARGET_MX6QSMARC
-+	bool "mx6qsmarc"
-+	select BOARD_LATE_INIT
-+	select DM
-+	select DM_THERMAL
-+	select BOARD_EARLY_INIT_F
-+
- config TARGET_MX6SABRESD
- 	bool "mx6sabresd"
- 	select BOARD_LATE_INIT
-@@ -485,6 +492,7 @@ source "board/engicam/icorem6/Kconfig"
- source "board/engicam/icorem6_rqs/Kconfig"
- source "board/freescale/mx6qarm2/Kconfig"
- source "board/freescale/mx6qsabreauto/Kconfig"
-+source "board/freescale/mx6qsmarc/Kconfig"
- source "board/freescale/mx6sabresd/Kconfig"
- source "board/freescale/mx6slevk/Kconfig"
- source "board/freescale/mx6sll_arm2/Kconfig"
 diff --git a/arch/arm/dts/imx6dl-smarc.dtsi b/arch/arm/dts/imx6dl-smarc.dtsi
 new file mode 100644
-index 0000000..f1fd136
+index 00000000..f1fd136e
 --- /dev/null
 +++ b/arch/arm/dts/imx6dl-smarc.dtsi
 @@ -0,0 +1,42 @@
@@ -105,7 +54,7 @@ index 0000000..f1fd136
 +};
 diff --git a/arch/arm/dts/imx6q-smarc.dtsi b/arch/arm/dts/imx6q-smarc.dtsi
 new file mode 100644
-index 0000000..d246ff9
+index 00000000..d246ff9d
 --- /dev/null
 +++ b/arch/arm/dts/imx6q-smarc.dtsi
 @@ -0,0 +1,56 @@
@@ -167,10 +116,10 @@ index 0000000..d246ff9
 +};
 diff --git a/arch/arm/dts/imx6qdl-smarc.dtsi b/arch/arm/dts/imx6qdl-smarc.dtsi
 new file mode 100644
-index 0000000..f1459c4
+index 00000000..41805af8
 --- /dev/null
 +++ b/arch/arm/dts/imx6qdl-smarc.dtsi
-@@ -0,0 +1,1018 @@
+@@ -0,0 +1,986 @@
 +/*
 + * Copyright 2012-2015 Freescale Semiconductor, Inc.
 + * Copyright 2011 Linaro Ltd.
@@ -206,7 +155,7 @@ index 0000000..f1459c4
 +		};
 +	};
 +
-+	regulators {
++	regulators: regulators {
 +		compatible = "simple-bus";
 +		#address-cells = <1>;
 +		#size-cells = <0>;
@@ -261,20 +210,6 @@ index 0000000..f1459c4
 +		spdif-in;
 +	};
 +
-+	sound {
-+		compatible = "fsl,imx6q-sabrelite-sgtl5000",
-+					 "fsl,imx-audio-sgtl5000";
-+		model = "imx6q-sabrelite-sgtl5000";
-+		ssi-controller = <&ssi1>;
-+		audio-codec = <&codec>;
-+		audio-routing =
-+						"MIC_IN", "Mic Jack",
-+						"Mic Jack", "Mic Bias",
-+						"Headphone Jack", "HP_OUT";
-+						mux-int-port = <1>;
-+						mux-ext-port = <3>;
-+	};
-+
 +	mxcfb1: fb@0 {
 +		compatible = "fsl,mxc_sdc_fb";
 +		disp_dev = "hdmi";
@@ -317,7 +252,7 @@ index 0000000..f1459c4
 +		status = "disabled";
 +	};
 +
-+	v4l2_cap_0 {
++	v4l20: v4l2_cap_0 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <0>;
@@ -325,7 +260,7 @@ index 0000000..f1459c4
 +		status = "okay";
 +	};
 +
-+	v4l2_cap_1 {
++	v4l21: v4l2_cap_1 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <1>;
@@ -468,14 +403,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c1_1>;
 +	status = "okay";
-+
-+	codec: sgtl5000@0a {
-+		compatible = "fsl,sgtl5000";
-+		reg = <0x0a>;
-+		clocks = <&clks 201>;
-+		VDDA-supply = <&reg_1p8v>;
-+		VDDIO-supply = <&reg_3p3v>;
-+	};	
 +};
 +
 +&i2c2 {
@@ -483,16 +410,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c2_1>;
 +	status = "okay";
-+
-+	mt9m111@5d {
-+		compatible = "micron,mt9m111";
-+		reg = <0x5d>;
-+		clocks = <&clks 201>;
-+		clock-names = "csi_mclk";
-+		csi_id = <1>;
-+		mclk = <24000000>;
-+		mclk_source = <0>;
-+	};
 +};
 +
 +&i2c3 {
@@ -1189,9 +1106,35 @@ index 0000000..f1459c4
 +&vpu {
 +	status = "okay";
 +};
+diff --git a/arch/arm/mach-imx/mx6/Kconfig b/arch/arm/mach-imx/mx6/Kconfig
+index 88f188e9..76878b5a 100644
+--- a/arch/arm/mach-imx/mx6/Kconfig
++++ b/arch/arm/mach-imx/mx6/Kconfig
+@@ -392,6 +392,13 @@ config TARGET_MX6QSABRESD
+     select TARGET_MX6SABRESD_COMMON
+     select MX6Q
+ 
++config TARGET_MX6QSMARC
++	bool "mx6qsmarc"
++	select BOARD_LATE_INIT
++	select DM
++	select DM_THERMAL
++	select BOARD_EARLY_INIT_F
++
+ config TARGET_MX6QPSABRESD
+ 	bool "mx6qpsabresd"
+     select TARGET_MX6SABRESD_COMMON
+@@ -720,6 +727,7 @@ source "board/freescale/mx6qarm2/Kconfig"
+ source "board/freescale/mx6memcal/Kconfig"
+ source "board/freescale/mx6sabreauto/Kconfig"
+ source "board/freescale/mx6sabresd/Kconfig"
++source "board/freescale/mx6qsmarc/Kconfig"
+ source "board/freescale/mx6slevk/Kconfig"
+ source "board/freescale/mx6sll_arm2/Kconfig"
+ source "board/freescale/mx6sllevk/Kconfig"
 diff --git a/board/freescale/mx6qsmarc/Kconfig b/board/freescale/mx6qsmarc/Kconfig
 new file mode 100644
-index 0000000..7f4716f
+index 00000000..7f4716ff
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/Kconfig
 @@ -0,0 +1,17 @@
@@ -1214,7 +1157,7 @@ index 0000000..7f4716f
 +endif
 diff --git a/board/freescale/mx6qsmarc/MAINTAINERS b/board/freescale/mx6qsmarc/MAINTAINERS
 new file mode 100644
-index 0000000..55aedf5
+index 00000000..55aedf57
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/MAINTAINERS
 @@ -0,0 +1,5 @@
@@ -1225,7 +1168,7 @@ index 0000000..55aedf5
 +F:	include/configs/mx6qsmarc.h
 diff --git a/board/freescale/mx6qsmarc/Makefile b/board/freescale/mx6qsmarc/Makefile
 new file mode 100644
-index 0000000..d19a41a
+index 00000000..d19a41a8
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/Makefile
 @@ -0,0 +1,9 @@
@@ -1240,7 +1183,7 @@ index 0000000..d19a41a
 +obj-y  := mx6qsmarc.o
 diff --git a/board/freescale/mx6qsmarc/imximage.cfg b/board/freescale/mx6qsmarc/imximage.cfg
 new file mode 100644
-index 0000000..57d6765
+index 00000000..57d67653
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/imximage.cfg
 @@ -0,0 +1,132 @@
@@ -1376,9 +1319,147 @@ index 0000000..57d6765
 +DATA 4 0x020e0018 0x007F007F
 +DATA 4 0x020e001c 0x007F007F
 +
+diff --git a/board/freescale/mx6qsmarc/imximage_2GB.cfg b/board/freescale/mx6qsmarc/imximage_2GB.cfg
+new file mode 100644
+index 00000000..5f2ee435
+--- /dev/null
++++ b/board/freescale/mx6qsmarc/imximage_2GB.cfg
+@@ -0,0 +1,132 @@
++/*
++ * Copyright (C) 2012 Freescale Semiconductor, Inc.
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer doc/README.imximage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++/* image version */
++
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of
++ * spi, sd (the board has no nand neither onenand)
++ */
++BOOT_FROM	sd
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *	Addr-type register length (1,2 or 4 bytes)
++ *	Address	  absolute address of the register
++ *	value	  value to be stored in the register
++ */
++
++DATA 4 0x020e0798 0x000C0000
++DATA 4 0x020e0758 0x00000000
++DATA 4 0x020e0588 0x00000028
++DATA 4 0x020e0594 0x00000028
++DATA 4 0x020e056c 0x00000028
++DATA 4 0x020e0578 0x00000028
++DATA 4 0x020e074c 0x00000028
++DATA 4 0x020e057c 0x00000028
++DATA 4 0x020e058c 0x00000000
++DATA 4 0x020e059c 0x00000028
++DATA 4 0x020e05a0 0x00000028
++DATA 4 0x020e078c 0x00000028
++DATA 4 0x020e0750 0x00020000
++DATA 4 0x020e05a8 0x00000028
++DATA 4 0x020e05b0 0x00000028
++DATA 4 0x020e0524 0x00000028
++DATA 4 0x020e051c 0x00000028
++DATA 4 0x020e0518 0x00000028
++DATA 4 0x020e050c 0x00000028
++DATA 4 0x020e05b8 0x00000028
++DATA 4 0x020e05c0 0x00000028
++DATA 4 0x020e0774 0x00020000
++DATA 4 0x020e0784 0x00000028
++DATA 4 0x020e0788 0x00000028
++DATA 4 0x020e0794 0x00000028
++DATA 4 0x020e079c 0x00000028
++DATA 4 0x020e07a0 0x00000028
++DATA 4 0x020e07a4 0x00000028
++DATA 4 0x020e07a8 0x00000028
++DATA 4 0x020e0748 0x00000028
++DATA 4 0x020e05ac 0x00000028
++DATA 4 0x020e05b4 0x00000028
++DATA 4 0x020e0528 0x00000028
++DATA 4 0x020e0520 0x00000028
++DATA 4 0x020e0514 0x00000028
++DATA 4 0x020e0510 0x00000028
++DATA 4 0x020e05bc 0x00000028
++DATA 4 0x020e05c4 0x00000028
++DATA 4 0x021b001c 0x00008000
++DATA 4 0x021b0800 0xA1390003
++DATA 4 0x021b080c 0x00130018
++DATA 4 0x021b0810 0x002A001B
++DATA 4 0x021b480c 0x00090029
++DATA 4 0x021b4810 0x00070010
++DATA 4 0x021b083c 0x03280334
++DATA 4 0x021b0840 0x0324031C
++DATA 4 0x021b483c 0x03300338
++DATA 4 0x021b4840 0x0320026C
++DATA 4 0x021b0848 0x483A3C40
++DATA 4 0x021b4848 0x403E3A4A
++DATA 4 0x021b0850 0x363A3A3E
++DATA 4 0x021b4850 0x4230463C
++DATA 4 0x021b081c 0x33333333
++DATA 4 0x021b0820 0x33333333
++DATA 4 0x021b0824 0x33333333
++DATA 4 0x021b0828 0x33333333
++DATA 4 0x021b481c 0x33333333
++DATA 4 0x021b4820 0x33333333
++DATA 4 0x021b4824 0x33333333
++DATA 4 0x021b4828 0x33333333
++DATA 4 0x021b08b8 0x00000800
++DATA 4 0x021b48b8 0x00000800
++DATA 4 0x021b0004 0x00020036
++DATA 4 0x021b0008 0x24444040
++DATA 4 0x021b000c 0x898E7955
++DATA 4 0x021b0010 0xFF328F64
++DATA 4 0x021b0014 0x01FF00DB
++DATA 4 0x021b0018 0x00011740
++DATA 4 0x021b001c 0x00008000
++DATA 4 0x021b002c 0x000026D2
++DATA 4 0x021b0030 0x008E1023
++DATA 4 0x021b0040 0x00000047
++DATA 4 0x021b0000 0x841A0000
++DATA 4 0x021b001c 0x02088032
++DATA 4 0x021b001c 0x00008033
++DATA 4 0x021b001c 0x00408031
++DATA 4 0x021b001c 0x19408030
++DATA 4 0x021b001c 0x04008040
++DATA 4 0x021b0020 0x00005800
++DATA 4 0x021b0818 0x00011117
++DATA 4 0x021b4818 0x00011117
++DATA 4 0x021b0004 0x00025576
++DATA 4 0x021b0404 0x00011006
++DATA 4 0x021b001c 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4 0x020c4068 0x00C03F3F
++DATA 4 0x020c406c 0x0030FC03
++DATA 4 0x020c4070 0x0FFFC000
++DATA 4 0x020c4074 0x3FF00000
++DATA 4 0x020c4078 0xFFFFF300
++DATA 4 0x020c407c 0x0F0000F3
++DATA 4 0x020c4080 0x00000FFF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4 0x020e0010 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4 0x020e0018 0x007F007F
++DATA 4 0x020e001c 0x007F007F
++
 diff --git a/board/freescale/mx6qsmarc/mx6dl.cfg b/board/freescale/mx6qsmarc/mx6dl.cfg
 new file mode 100644
-index 0000000..d11256d
+index 00000000..d11256dc
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/mx6dl.cfg
 @@ -0,0 +1,119 @@
@@ -1501,12 +1582,137 @@ index 0000000..d11256d
 +/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
 +DATA 4 0x020e0018 0x007F007F
 +DATA 4 0x020e001c 0x007F007F
+diff --git a/board/freescale/mx6qsmarc/mx6dl_1GB.cfg b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
+new file mode 100644
+index 00000000..36a9acc0
+--- /dev/null
++++ b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
+@@ -0,0 +1,119 @@
++/*
++ * Copyright (C) 2013 Freescale Semiconductor, Inc.
++ * Jason Liu <r64343@freescale.com>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ *
++ * Refer doc/README.imximage for more details about how-to configure
++ * and create imximage boot image
++ *
++ * The syntax is taken as close as possible with the kwbimage
++ */
++/* image version */
++
++IMAGE_VERSION 2
++
++/*
++ * Boot Device : one of
++ * spi, sd (the board has no nand neither onenand)
++ */
++BOOT_FROM	sd
++
++/*
++ * Device Configuration Data (DCD)
++ *
++ * Each entry must have the format:
++ * Addr-type           Address        Value
++ *
++ * where:
++ *	Addr-type register length (1,2 or 4 bytes)
++ *	Address	  absolute address of the register
++ *	value	  value to be stored in the register
++ */
++DATA 4 0x020e0774 0x000C0000
++DATA 4 0x020e0754 0x00000000
++DATA 4 0x020e04ac 0x00000028
++DATA 4 0x020e04b0 0x00000028
++DATA 4 0x020e0464 0x00000028
++DATA 4 0x020e0490 0x00000028
++DATA 4 0x020e074c 0x00000028
++DATA 4 0x020e0494 0x00000028
++DATA 4 0x020e04a0 0x00000000
++DATA 4 0x020e04b4 0x00000028
++DATA 4 0x020e04b8 0x00000028
++DATA 4 0x020e076c 0x00000028
++DATA 4 0x020e0750 0x00020000
++DATA 4 0x020e04bc 0x00000028
++DATA 4 0x020e04c0 0x00000028
++DATA 4 0x020e04c4 0x00000028
++DATA 4 0x020e04c8 0x00000028
++//DATA 4 0x020e04cc 0x00000028
++//DATA 4 0x020e04d0 0x00000028
++//DATA 4 0x020e04d4 0x00000028
++//DATA 4 0x020e04d8 0x00000028
++DATA 4 0x020e0760 0x00020000
++DATA 4 0x020e0764 0x00000028
++DATA 4 0x020e0770 0x00000028
++DATA 4 0x020e0778 0x00000028
++DATA 4 0x020e077c 0x00000028
++//DATA 4 0x020e0780 0x00000028
++//DATA 4 0x020e0784 0x00000028
++//DATA 4 0x020e078c 0x00000028
++//DATA 4 0x020e0748 0x00000028
++DATA 4 0x020e0470 0x00000028
++DATA 4 0x020e0474 0x00000028
++DATA 4 0x020e0478 0x00000028
++DATA 4 0x020e047c 0x00000028
++//DATA 4 0x020e0480 0x00000028
++//DATA 4 0x020e0484 0x00000028
++//DATA 4 0x020e0488 0x00000028
++//DATA 4 0x020e048c 0x00000028
++DATA 4 0x021b0800 0xA1390003
++DATA 4 0x021b080c 0x004C0053
++DATA 4 0x021b0810 0x003E0043
++DATA 4 0x021b083c 0x02440244
++DATA 4 0x021b0840 0x02280228
++DATA 4 0x021b0848 0x4A484E4C
++DATA 4 0x021b0850 0x36382E2E
++DATA 4 0x021b081c 0x33333333
++DATA 4 0x021b0820 0x33333333
++DATA 4 0x021b0824 0x33333333
++DATA 4 0x021b0828 0x33333333
++DATA 4 0x021b08b8 0x00000800
++DATA 4 0x021b0004 0x0002002D
++DATA 4 0x021b0008 0x00333040
++DATA 4 0x021b000c 0x676B52F3
++DATA 4 0x021b0010 0xB66D8B63
++DATA 4 0x021b0014 0x01FF00DB
++DATA 4 0x021b0018 0x00011740
++DATA 4 0x021b001c 0x00008000
++DATA 4 0x021b002c 0x000026D2
++DATA 4 0x021b0030 0x006B1023
++DATA 4 0x021b0040 0x00000027
++DATA 4 0x021b0000 0x84190000
++DATA 4 0x021b001c 0x02008032
++DATA 4 0x021b001c 0x00008033
++DATA 4 0x021b001c 0x00408031
++DATA 4 0x021b001c 0x15208030
++DATA 4 0x021b001c 0x04008040
++DATA 4 0x021b0020 0x00005800
++DATA 4 0x021b0818 0x00011117
++/*DATA 4 0x021b4818 0x00022227*/
++DATA 4 0x021b0004 0x0002556D
++DATA 4 0x021b0404 0x00011006
++DATA 4 0x021b001c 0x00000000
++
++/* set the default clock gate to save power */
++DATA 4 0x020c4068 0x00C03F3F
++DATA 4 0x020c406c 0x0030FC03
++DATA 4 0x020c4070 0x0FFFC000
++DATA 4 0x020c4074 0x3FF00000
++DATA 4 0x020c4078 0xFFFFF300
++DATA 4 0x020c407c 0x0F0000C3
++DATA 4 0x020c4080 0x00000FFF
++
++/* enable AXI cache for VDOA/VPU/IPU */
++DATA 4 0x020e0010 0xF00000CF
++/* set IPU AXI-id0 Qos=0xf(bypass) AXI-id1 Qos=0x7 */
++DATA 4 0x020e0018 0x007F007F
++DATA 4 0x020e001c 0x007F007F
 diff --git a/board/freescale/mx6qsmarc/mx6qsmarc.c b/board/freescale/mx6qsmarc/mx6qsmarc.c
 new file mode 100644
-index 0000000..06f5ed7
+index 00000000..49a2e6f8
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/mx6qsmarc.c
-@@ -0,0 +1,1353 @@
+@@ -0,0 +1,1356 @@
 +/*
 + * Copyright (C) 2012-2016 Freescale Semiconductor, Inc.
 + * Copyright 2017 NXP
@@ -2092,6 +2298,14 @@ index 0000000..06f5ed7
 +
 +int board_eth_init(bd_t *bis)
 +{
++	// Reset PHY and ensure RX_DV is pulled high to enable REF_CLK
++	gpio_request(IMX_GPIO_NR(1, 4), "phy_reset");
++	gpio_direction_output(IMX_GPIO_NR(1,4),0);
++	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL,ENET_PAD_CTRL)); // CLK125_EN strap pin
++	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RXC__RGMII_RXC,ENET_PAD_CTRL)); // PHYAD2 strap pin
++	
++	udelay(10000);
++	setup_fec();
 +	setup_iomux_enet();
 +
 +	return cpu_eth_init(bis);
@@ -2390,19 +2604,7 @@ index 0000000..06f5ed7
 +
 +int board_early_init_f(void)
 +{
-+	// assert carrier_pwr_ok to allow UART to be visible
-+	gpio_direction_output(IMX_GPIO_NR(4, 5), 1); 
-+	// Reset PHY and ensure RX_DV is pulled high to enable REF_CLK
-+	gpio_request(IMX_GPIO_NR(1, 4), "phy_reset");
-+	gpio_direction_output(IMX_GPIO_NR(1,4),0);
-+	imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RX_CTL__RGMII_RX_CTL,ENET_PAD_CTRL));
-+        imx_iomux_v3_setup_pad(NEW_PAD_CTRL(MX6_PAD_RGMII_RXC__RGMII_RXC,ENET_PAD_CTRL));
-+
 +	setup_iomux_uart();
-+
-+#ifdef CONFIG_VIDEO_IPUV3
-+		setup_display();
-+#endif
 +
 +#ifdef CONFIG_MTD_NOR_FLASH
 +	eim_clk_setup();
@@ -2437,7 +2639,7 @@ index 0000000..06f5ed7
 +};
 +
 +static unsigned char CPLD_init_blob[] = {
-+	0x10,
++	0x00,
 +	0xff
 +};
 +
@@ -2462,12 +2664,13 @@ index 0000000..06f5ed7
 +    gpio_direction_output(IMX_GPIO_NR(7,8),0);
 +    udelay(1);
 +    gpio_direction_output(IMX_GPIO_NR(7,8),1);
++    udelay(600);
 +    /* USB HUB initialization */
 +    I2C_SET_BUS(2);
 +    i2c_write(0x2c,0,1,usb_init_blob, sizeof(usb_init_blob));
 +    i2c_write(0x2c,0xff,1,usb_init_blob2, sizeof(usb_init_blob2));
 +    /* Remove Carrier from Reset*/
-+    i2c_write(0x1,0,1,CPLD_init_blob, sizeof(CPLD_init_blob));
++    i2c_write(0x04,0,1,CPLD_init_blob, sizeof(CPLD_init_blob));
 +    /* Turn on LCD panel*/
 +	gpio_request(IMX_GPIO_NR(1, 0), "lcd_vdd_en");
 +    gpio_direction_output(IMX_GPIO_NR(1, 0), 1);
@@ -2522,6 +2725,10 @@ index 0000000..06f5ed7
 +	}
 +#endif
 +
++#ifdef CONFIG_VIDEO_IPUV3
++		setup_display();
++#endif
++
 +#ifdef CONFIG_MXC_SPI
 +	setup_spinor();
 +#endif
@@ -2538,8 +2745,10 @@ index 0000000..06f5ed7
 +	setup_iomux_eimnor();
 +#endif
 +
++#if 0
 +#ifdef CONFIG_FEC_MXC
 +	setup_fec();
++#endif
 +#endif
 +
 +#ifdef CONFIG_USB_EHCI_MX6
@@ -2862,7 +3071,7 @@ index 0000000..06f5ed7
 +#endif /*CONFIG_FSL_FASTBOOT*/
 diff --git a/include/configs/mx6qsmarc.h b/include/configs/mx6qsmarc.h
 new file mode 100644
-index 0000000..4261eee
+index 00000000..4261eeef
 --- /dev/null
 +++ b/include/configs/mx6qsmarc.h
 @@ -0,0 +1,64 @@
@@ -2932,7 +3141,7 @@ index 0000000..4261eee
 +#endif                         /* __MX6QSMARC_CONFIG_H */
 diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
 new file mode 100644
-index 0000000..0729194
+index 00000000..07291946
 --- /dev/null
 +++ b/include/configs/mx6smarc_common.h
 @@ -0,0 +1,400 @@
@@ -3337,5 +3546,5 @@ index 0000000..0729194
 +
 +#endif                         /* __MX6QSMARC_COMMON_CONFIG_H */
 -- 
-1.9.1
+2.17.1
 
