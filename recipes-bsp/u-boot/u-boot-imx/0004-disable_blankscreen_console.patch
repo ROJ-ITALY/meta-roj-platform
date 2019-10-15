@@ -1,11 +1,8 @@
-From 453affd2ef9e63e4d250b492460d65a4d7149f96 Mon Sep 17 00:00:00 2001
+From 32a480c01a75b7c7006f1183641f0c40b831ee6f Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Wed, 22 Nov 2017 11:54:21 +0100
+Date: Tue, 15 Oct 2019 16:27:26 +0200
 Subject: [PATCH] disable_blankscreen_console
 
----
- include/configs/mx6smarc_common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
 index 06a4437..7379e54 100644
@@ -21,5 +18,5 @@ index 06a4437..7379e54 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript=" \
 -- 
-2.7.4
+2.17.1
 

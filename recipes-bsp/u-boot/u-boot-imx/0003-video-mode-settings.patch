@@ -1,11 +1,8 @@
-From d22bd18490610652ab8ca6d8bda9ac773eb9c98f Mon Sep 17 00:00:00 2001
+From 10b064509d11ada77a685eba43651946e52fbd57 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Thu, 16 Nov 2017 12:02:55 +0100
+Date: Tue, 15 Oct 2019 16:26:00 +0200
 Subject: [PATCH] video-mode-settings
 
----
- include/configs/mx6smarc_common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
 index 0729194..06a4437 100644
@@ -21,5 +18,5 @@ index 0729194..06a4437 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript=" \
 -- 
-2.7.4
+2.17.1
 

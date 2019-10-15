@@ -1,11 +1,8 @@
-From 7c2af68417e30a958412e1a6d660e63be763856f Mon Sep 17 00:00:00 2001
+From ea25b8f63f44f4ffd22f6054fdf63940530b539f Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Wed, 22 Nov 2017 12:00:02 +0100
+Date: Tue, 15 Oct 2019 16:29:13 +0200
 Subject: [PATCH] disable_cursor_blink
 
----
- include/configs/mx6smarc_common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
 index 7379e54..c56fbc1 100644
@@ -21,5 +18,5 @@ index 7379e54..c56fbc1 100644
  		"root=${mmcroot}\0" \
  	"loadbootscript=" \
 -- 
-2.7.4
+2.17.1
 

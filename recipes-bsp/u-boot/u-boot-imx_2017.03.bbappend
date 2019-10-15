@@ -1,6 +1,6 @@
 # ROJ
 
-DESCRIPTION = "bootloader for Roj Demokit (smarc+enuc platform)"
+DESCRIPTION = "bootloader for smarc+enuc platform"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 

@@ -1,12 +1,38 @@
-From 601da128f47da4fb251e65aba95a197c8a21e365 Mon Sep 17 00:00:00 2001
+From e7d2a3d0d41ea9a1379de1a40764dc708d6d1f10 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Mon, 14 Oct 2019 15:05:03 +0200
+Date: Tue, 15 Oct 2019 16:18:59 +0200
 Subject: [PATCH] smarc-som-support
 
 
+diff --git a/arch/arm/cpu/armv7/mx6/Kconfig b/arch/arm/cpu/armv7/mx6/Kconfig
+index be9f2b9..d64b0af 100644
+--- a/arch/arm/cpu/armv7/mx6/Kconfig
++++ b/arch/arm/cpu/armv7/mx6/Kconfig
+@@ -203,6 +203,13 @@ config TARGET_MX6QSABREAUTO
+ 	select DM_THERMAL
+ 	select BOARD_EARLY_INIT_F
+ 
++config TARGET_MX6QSMARC
++	bool "mx6qsmarc"
++	select BOARD_LATE_INIT
++	select DM
++	select DM_THERMAL
++	select BOARD_EARLY_INIT_F
++
+ config TARGET_MX6SABRESD
+ 	bool "mx6sabresd"
+ 	select BOARD_LATE_INIT
+@@ -492,6 +499,7 @@ source "board/engicam/icorem6/Kconfig"
+ source "board/engicam/icorem6_rqs/Kconfig"
+ source "board/freescale/mx6qarm2/Kconfig"
+ source "board/freescale/mx6qsabreauto/Kconfig"
++source "board/freescale/mx6qsmarc/Kconfig"
+ source "board/freescale/mx6sabresd/Kconfig"
+ source "board/freescale/mx6slevk/Kconfig"
+ source "board/freescale/mx6sll_arm2/Kconfig"
 diff --git a/arch/arm/dts/imx6dl-smarc.dtsi b/arch/arm/dts/imx6dl-smarc.dtsi
 new file mode 100644
-index 00000000..f1fd136e
+index 0000000..f1fd136
 --- /dev/null
 +++ b/arch/arm/dts/imx6dl-smarc.dtsi
 @@ -0,0 +1,42 @@
@@ -54,7 +80,7 @@ index 00000000..f1fd136e
 +};
 diff --git a/arch/arm/dts/imx6q-smarc.dtsi b/arch/arm/dts/imx6q-smarc.dtsi
 new file mode 100644
-index 00000000..d246ff9d
+index 0000000..d246ff9
 --- /dev/null
 +++ b/arch/arm/dts/imx6q-smarc.dtsi
 @@ -0,0 +1,56 @@
@@ -116,10 +142,10 @@ index 00000000..d246ff9d
 +};
 diff --git a/arch/arm/dts/imx6qdl-smarc.dtsi b/arch/arm/dts/imx6qdl-smarc.dtsi
 new file mode 100644
-index 00000000..41805af8
+index 0000000..f1459c4
 --- /dev/null
 +++ b/arch/arm/dts/imx6qdl-smarc.dtsi
-@@ -0,0 +1,986 @@
+@@ -0,0 +1,1018 @@
 +/*
 + * Copyright 2012-2015 Freescale Semiconductor, Inc.
 + * Copyright 2011 Linaro Ltd.
@@ -155,7 +181,7 @@ index 00000000..41805af8
 +		};
 +	};
 +
-+	regulators: regulators {
++	regulators {
 +		compatible = "simple-bus";
 +		#address-cells = <1>;
 +		#size-cells = <0>;
@@ -210,6 +236,20 @@ index 00000000..41805af8
 +		spdif-in;
 +	};
 +
++	sound {
++		compatible = "fsl,imx6q-sabrelite-sgtl5000",
++					 "fsl,imx-audio-sgtl5000";
++		model = "imx6q-sabrelite-sgtl5000";
++		ssi-controller = <&ssi1>;
++		audio-codec = <&codec>;
++		audio-routing =
++						"MIC_IN", "Mic Jack",
++						"Mic Jack", "Mic Bias",
++						"Headphone Jack", "HP_OUT";
++						mux-int-port = <1>;
++						mux-ext-port = <3>;
++	};
++
 +	mxcfb1: fb@0 {
 +		compatible = "fsl,mxc_sdc_fb";
 +		disp_dev = "hdmi";
@@ -252,7 +292,7 @@ index 00000000..41805af8
 +		status = "disabled";
 +	};
 +
-+	v4l20: v4l2_cap_0 {
++	v4l2_cap_0 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <0>;
@@ -260,7 +300,7 @@ index 00000000..41805af8
 +		status = "okay";
 +	};
 +
-+	v4l21: v4l2_cap_1 {
++	v4l2_cap_1 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <1>;
@@ -403,6 +443,14 @@ index 00000000..41805af8
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c1_1>;
 +	status = "okay";
++
++	codec: sgtl5000@0a {
++		compatible = "fsl,sgtl5000";
++		reg = <0x0a>;
++		clocks = <&clks 201>;
++		VDDA-supply = <&reg_1p8v>;
++		VDDIO-supply = <&reg_3p3v>;
++	};	
 +};
 +
 +&i2c2 {
@@ -410,6 +458,16 @@ index 00000000..41805af8
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c2_1>;
 +	status = "okay";
++
++	mt9m111@5d {
++		compatible = "micron,mt9m111";
++		reg = <0x5d>;
++		clocks = <&clks 201>;
++		clock-names = "csi_mclk";
++		csi_id = <1>;
++		mclk = <24000000>;
++		mclk_source = <0>;
++	};
 +};
 +
 +&i2c3 {
@@ -1106,35 +1164,9 @@ index 00000000..41805af8
 +&vpu {
 +	status = "okay";
 +};
-diff --git a/arch/arm/mach-imx/mx6/Kconfig b/arch/arm/mach-imx/mx6/Kconfig
-index 88f188e9..76878b5a 100644
---- a/arch/arm/mach-imx/mx6/Kconfig
-+++ b/arch/arm/mach-imx/mx6/Kconfig
-@@ -392,6 +392,13 @@ config TARGET_MX6QSABRESD
-     select TARGET_MX6SABRESD_COMMON
-     select MX6Q
- 
-+config TARGET_MX6QSMARC
-+	bool "mx6qsmarc"
-+	select BOARD_LATE_INIT
-+	select DM
-+	select DM_THERMAL
-+	select BOARD_EARLY_INIT_F
-+
- config TARGET_MX6QPSABRESD
- 	bool "mx6qpsabresd"
-     select TARGET_MX6SABRESD_COMMON
-@@ -720,6 +727,7 @@ source "board/freescale/mx6qarm2/Kconfig"
- source "board/freescale/mx6memcal/Kconfig"
- source "board/freescale/mx6sabreauto/Kconfig"
- source "board/freescale/mx6sabresd/Kconfig"
-+source "board/freescale/mx6qsmarc/Kconfig"
- source "board/freescale/mx6slevk/Kconfig"
- source "board/freescale/mx6sll_arm2/Kconfig"
- source "board/freescale/mx6sllevk/Kconfig"
 diff --git a/board/freescale/mx6qsmarc/Kconfig b/board/freescale/mx6qsmarc/Kconfig
 new file mode 100644
-index 00000000..7f4716ff
+index 0000000..7f4716f
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/Kconfig
 @@ -0,0 +1,17 @@
@@ -1157,7 +1189,7 @@ index 00000000..7f4716ff
 +endif
 diff --git a/board/freescale/mx6qsmarc/MAINTAINERS b/board/freescale/mx6qsmarc/MAINTAINERS
 new file mode 100644
-index 00000000..55aedf57
+index 0000000..55aedf5
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/MAINTAINERS
 @@ -0,0 +1,5 @@
@@ -1168,7 +1200,7 @@ index 00000000..55aedf57
 +F:	include/configs/mx6qsmarc.h
 diff --git a/board/freescale/mx6qsmarc/Makefile b/board/freescale/mx6qsmarc/Makefile
 new file mode 100644
-index 00000000..d19a41a8
+index 0000000..d19a41a
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/Makefile
 @@ -0,0 +1,9 @@
@@ -1183,7 +1215,7 @@ index 00000000..d19a41a8
 +obj-y  := mx6qsmarc.o
 diff --git a/board/freescale/mx6qsmarc/imximage.cfg b/board/freescale/mx6qsmarc/imximage.cfg
 new file mode 100644
-index 00000000..57d67653
+index 0000000..57d6765
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/imximage.cfg
 @@ -0,0 +1,132 @@
@@ -1321,7 +1353,7 @@ index 00000000..57d67653
 +
 diff --git a/board/freescale/mx6qsmarc/imximage_2GB.cfg b/board/freescale/mx6qsmarc/imximage_2GB.cfg
 new file mode 100644
-index 00000000..5f2ee435
+index 0000000..5f2ee43
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/imximage_2GB.cfg
 @@ -0,0 +1,132 @@
@@ -1459,7 +1491,7 @@ index 00000000..5f2ee435
 +
 diff --git a/board/freescale/mx6qsmarc/mx6dl.cfg b/board/freescale/mx6qsmarc/mx6dl.cfg
 new file mode 100644
-index 00000000..d11256dc
+index 0000000..d11256d
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/mx6dl.cfg
 @@ -0,0 +1,119 @@
@@ -1584,7 +1616,7 @@ index 00000000..d11256dc
 +DATA 4 0x020e001c 0x007F007F
 diff --git a/board/freescale/mx6qsmarc/mx6dl_1GB.cfg b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
 new file mode 100644
-index 00000000..36a9acc0
+index 0000000..36a9acc
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/mx6dl_1GB.cfg
 @@ -0,0 +1,119 @@
@@ -1709,7 +1741,7 @@ index 00000000..36a9acc0
 +DATA 4 0x020e001c 0x007F007F
 diff --git a/board/freescale/mx6qsmarc/mx6qsmarc.c b/board/freescale/mx6qsmarc/mx6qsmarc.c
 new file mode 100644
-index 00000000..49a2e6f8
+index 0000000..49a2e6f
 --- /dev/null
 +++ b/board/freescale/mx6qsmarc/mx6qsmarc.c
 @@ -0,0 +1,1356 @@
@@ -3069,9 +3101,139 @@ index 00000000..49a2e6f8
 +#endif /*CONFIG_ANDROID_RECOVERY*/
 +
 +#endif /*CONFIG_FSL_FASTBOOT*/
+diff --git a/configs/mx6dlenuc_1GB_defconfig b/configs/mx6dlenuc_1GB_defconfig
+new file mode 100644
+index 0000000..98a0b5b
+--- /dev/null
++++ b/configs/mx6dlenuc_1GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/mx6dl_1GB.cfg,MX6DL"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
+diff --git a/configs/mx6qenuc_2GB_defconfig b/configs/mx6qenuc_2GB_defconfig
+new file mode 100644
+index 0000000..779d2c6
+--- /dev/null
++++ b/configs/mx6qenuc_2GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/imximage_2GB.cfg,MX6Q"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6q-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
 diff --git a/include/configs/mx6qsmarc.h b/include/configs/mx6qsmarc.h
 new file mode 100644
-index 00000000..4261eeef
+index 0000000..4261eee
 --- /dev/null
 +++ b/include/configs/mx6qsmarc.h
 @@ -0,0 +1,64 @@
@@ -3141,7 +3303,7 @@ index 00000000..4261eeef
 +#endif                         /* __MX6QSMARC_CONFIG_H */
 diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
 new file mode 100644
-index 00000000..07291946
+index 0000000..0729194
 --- /dev/null
 +++ b/include/configs/mx6smarc_common.h
 @@ -0,0 +1,400 @@
