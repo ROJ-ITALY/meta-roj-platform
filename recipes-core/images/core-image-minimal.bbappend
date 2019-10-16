@@ -15,6 +15,9 @@ IMAGE_INSTALL_append = " nano"
 # Add firmware sn8000 (chipset broadcom)
 IMAGE_INSTALL_append = " kernel-firmware-brcmfmac43362-sdio"
 
+# Add firmware sdma-imx6q.bin
+IMAGE_INSTALL_append = " firmware-imx-sdma"
+
 # Add test-smarc
 IMAGE_INSTALL_append = " test-smarc"
 
