@@ -9,7 +9,7 @@ PVBASE := "${PV}"
 PV = "${PVBASE}.git${SRCPV}"
 
 S = "${WORKDIR}/git"
-RDEPENDS_${PN} += "bash"
+RDEPENDS_test-smarc = "bash python3-core"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"

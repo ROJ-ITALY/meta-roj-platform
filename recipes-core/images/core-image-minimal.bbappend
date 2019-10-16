@@ -22,8 +22,7 @@ IMAGE_INSTALL_append = " test-smarc"
 IMAGE_INSTALL_append = " image-version"
 
 # Add python3
-IMAGE_INSTALL_append = " python3 python3-argparse \
-			python3-subprocess \
+IMAGE_INSTALL_append = " python3 \
 			python3-json \
 			python3-io \
 			python3-shell \
