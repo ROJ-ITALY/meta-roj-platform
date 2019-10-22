@@ -21,6 +21,9 @@ IMAGE_INSTALL_append = " firmware-imx-sdma"
 # Add test-smarc
 IMAGE_INSTALL_append = " test-smarc"
 
+# Add wireless-regdb
+IMAGE_INSTALL_append = " wireless-regdb-static"
+
 # Add image version
 IMAGE_INSTALL_append = " image-version"
 

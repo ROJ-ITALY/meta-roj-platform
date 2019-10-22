@@ -1,15 +1,11 @@
-From 702df07b2f1a1d9b40f842c65d0bcdb434cc7308 Mon Sep 17 00:00:00 2001
+From 17d655bc1c435a6e3e19aad984edf6ff7d3f3bfd Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Wed, 22 Nov 2017 11:44:08 +0100
+Date: Tue, 22 Oct 2019 15:57:51 +0200
 Subject: [PATCH] spi-flash-support
 
----
- arch/arm/boot/dts/imx6dl-enuc.dts | 34 ++++++++++++++++++++++++++++++++++
- arch/arm/boot/dts/imx6q-enuc.dts  | 34 ++++++++++++++++++++++++++++++++++
- 2 files changed, 68 insertions(+)
 
 diff --git a/arch/arm/boot/dts/imx6dl-enuc.dts b/arch/arm/boot/dts/imx6dl-enuc.dts
-index 69b6d51..30ebf14 100644
+index 94076fd26..0c4b4a96d 100644
 --- a/arch/arm/boot/dts/imx6dl-enuc.dts
 +++ b/arch/arm/boot/dts/imx6dl-enuc.dts
 @@ -67,6 +67,24 @@
@@ -37,7 +33,7 @@ index 69b6d51..30ebf14 100644
  };
  
  &regulators {
-@@ -90,3 +108,19 @@
+@@ -91,3 +109,19 @@
  			compatible = "brcm,bcm4329-fmac";
  		};	
  };
@@ -58,7 +54,7 @@ index 69b6d51..30ebf14 100644
 +	};
 +};
 diff --git a/arch/arm/boot/dts/imx6q-enuc.dts b/arch/arm/boot/dts/imx6q-enuc.dts
-index c038551..88d4a90 100644
+index 24f31cf2b..2d525d850 100644
 --- a/arch/arm/boot/dts/imx6q-enuc.dts
 +++ b/arch/arm/boot/dts/imx6q-enuc.dts
 @@ -67,6 +67,24 @@
@@ -86,7 +82,7 @@ index c038551..88d4a90 100644
  };
  
  &regulators {
-@@ -90,3 +108,19 @@
+@@ -91,3 +109,19 @@
  			compatible = "brcm,bcm4329-fmac";
  		};	
  };
@@ -107,5 +103,5 @@ index c038551..88d4a90 100644
 +	};
 +};
 -- 
-2.7.4
+2.17.1
 
