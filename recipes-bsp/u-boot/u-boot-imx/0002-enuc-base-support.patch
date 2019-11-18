@@ -1,6 +1,6 @@
-From 6969004ca8a3eadfbf5f9d7406dee757d2c862b6 Mon Sep 17 00:00:00 2001
+From 8823aca7aa99e17cfb0cecb7e62653b5bda27d0e Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Tue, 15 Oct 2019 16:23:21 +0200
+Date: Mon, 18 Nov 2019 10:01:54 +0100
 Subject: [PATCH] enuc-base-support
 
 
@@ -69,15 +69,82 @@ index 0000000..445021f
 +	compatible = "fsl,imx6q-enuc", "fsl,imx6q";
 +};
 diff --git a/board/freescale/mx6qsmarc/MAINTAINERS b/board/freescale/mx6qsmarc/MAINTAINERS
-index 55aedf5..a700564 100644
+index 55aedf5..fc267bc 100644
 --- a/board/freescale/mx6qsmarc/MAINTAINERS
 +++ b/board/freescale/mx6qsmarc/MAINTAINERS
-@@ -3,3 +3,5 @@ M:	Stefano Gurrieri <stefano.gurrieri@roj.com>
+@@ -3,3 +3,7 @@ M:	Stefano Gurrieri <stefano.gurrieri@roj.com>
  S:	Maintained
  F:	board/freescale/mx6qsmarc/
  F:	include/configs/mx6qsmarc.h
 +F:	configs/mx6dlenuc_defconfig
 +F:	configs/mx6qenuc_defconfig
++F:	configs/mx6dlenuc_1GB_defconfig
++F:	configs/mx6qenuc_2GB_defconfig
+diff --git a/configs/mx6dlenuc_1GB_defconfig b/configs/mx6dlenuc_1GB_defconfig
+new file mode 100644
+index 0000000..98a0b5b
+--- /dev/null
++++ b/configs/mx6dlenuc_1GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/mx6dl_1GB.cfg,MX6DL"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
 diff --git a/configs/mx6dlenuc_defconfig b/configs/mx6dlenuc_defconfig
 new file mode 100644
 index 0000000..f12c10c
@@ -126,6 +193,71 @@ index 0000000..f12c10c
 +# CONFIG_OF_LIBFDT=y
 +
 +CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
++CONFIG_OF_CONTROL=y
++# CONFIG_BLK is not set
++CONFIG_DM_GPIO=y
++# CONFIG_DM_PCA953X is not set
++# CONFIG_DM_I2C is not set
++CONFIG_DM_MMC=y
++# CONFIG_DM_MMC_OPS is not set
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX6=y
++# CONFIG_DM_PMIC is not set
++# CONFIG_DM_PMIC_PFUZE100 is not set
++CONFIG_DM_REGULATOR=y
++# CONFIG_DM_REGULATOR_PFUZE100 is not set
++CONFIG_DM_REGULATOR_FIXED=y
++CONFIG_DM_REGULATOR_GPIO=y
++# CONFIG_DM_ETH is not set
++CONFIG_DM_USB=y
+diff --git a/configs/mx6qenuc_2GB_defconfig b/configs/mx6qenuc_2GB_defconfig
+new file mode 100644
+index 0000000..779d2c6
+--- /dev/null
++++ b/configs/mx6qenuc_2GB_defconfig
+@@ -0,0 +1,59 @@
++CONFIG_ARM=y
++CONFIG_ARCH_MX6=y
++CONFIG_TARGET_MX6QSMARC=y
++CONFIG_VIDEO=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/imximage_2GB.cfg,MX6Q"
++CONFIG_BOOTDELAY=1
++# CONFIG_CONSOLE_MUX is not set
++CONFIG_SYS_CONSOLE_IS_IN_ENV=y
++CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_BOOTZ=y
++# CONFIG_CMD_IMLS is not set
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DFU=y
++CONFIG_CMD_USB_MASS_STORAGE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_DFU_MMC=y
++CONFIG_USB=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_GADGET=y
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_G_DNL_MANUFACTURER="FSL"
++CONFIG_G_DNL_VENDOR_NUM=0x0525
++CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
++# CONFIG_VIDEO_SW_CURSOR is not set
++# CONFIG_OF_LIBFDT=y
++
++CONFIG_DEFAULT_DEVICE_TREE="imx6q-enuc"
 +CONFIG_OF_CONTROL=y
 +# CONFIG_BLK is not set
 +CONFIG_DM_GPIO=y
