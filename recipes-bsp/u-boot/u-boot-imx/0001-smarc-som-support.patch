@@ -1,6 +1,6 @@
-From e7d2a3d0d41ea9a1379de1a40764dc708d6d1f10 Mon Sep 17 00:00:00 2001
+From 09c9750bce0526193971a29a7811b755a966d237 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Tue, 18 Nov 2019 09:50:00 +0200
+Date: Tue, 19 Nov 2019 09:16:12 +0100
 Subject: [PATCH] smarc-som-support
 
 
@@ -142,10 +142,10 @@ index 0000000..d246ff9
 +};
 diff --git a/arch/arm/dts/imx6qdl-smarc.dtsi b/arch/arm/dts/imx6qdl-smarc.dtsi
 new file mode 100644
-index 0000000..f1459c4
+index 0000000..7e37f6f
 --- /dev/null
 +++ b/arch/arm/dts/imx6qdl-smarc.dtsi
-@@ -0,0 +1,1018 @@
+@@ -0,0 +1,986 @@
 +/*
 + * Copyright 2012-2015 Freescale Semiconductor, Inc.
 + * Copyright 2011 Linaro Ltd.
@@ -181,7 +181,7 @@ index 0000000..f1459c4
 +		};
 +	};
 +
-+	regulators {
++	regulators: regulators {
 +		compatible = "simple-bus";
 +		#address-cells = <1>;
 +		#size-cells = <0>;
@@ -236,20 +236,6 @@ index 0000000..f1459c4
 +		spdif-in;
 +	};
 +
-+	sound {
-+		compatible = "fsl,imx6q-sabrelite-sgtl5000",
-+					 "fsl,imx-audio-sgtl5000";
-+		model = "imx6q-sabrelite-sgtl5000";
-+		ssi-controller = <&ssi1>;
-+		audio-codec = <&codec>;
-+		audio-routing =
-+						"MIC_IN", "Mic Jack",
-+						"Mic Jack", "Mic Bias",
-+						"Headphone Jack", "HP_OUT";
-+						mux-int-port = <1>;
-+						mux-ext-port = <3>;
-+	};
-+
 +	mxcfb1: fb@0 {
 +		compatible = "fsl,mxc_sdc_fb";
 +		disp_dev = "hdmi";
@@ -292,7 +278,7 @@ index 0000000..f1459c4
 +		status = "disabled";
 +	};
 +
-+	v4l2_cap_0 {
++	v4l20: v4l2_cap_0 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <0>;
@@ -300,7 +286,7 @@ index 0000000..f1459c4
 +		status = "okay";
 +	};
 +
-+	v4l2_cap_1 {
++	v4l21: v4l2_cap_1 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <1>;
@@ -313,7 +299,7 @@ index 0000000..f1459c4
 +		status = "okay";
 +	};
 +
-+	lcd@0 {
++	lcd: lcd@0 {
 +		compatible = "fsl,lcd";
 +		ipu_id = <0>;
 +		disp_id = <0>;
@@ -443,14 +429,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c1_1>;
 +	status = "okay";
-+
-+	codec: sgtl5000@0a {
-+		compatible = "fsl,sgtl5000";
-+		reg = <0x0a>;
-+		clocks = <&clks 201>;
-+		VDDA-supply = <&reg_1p8v>;
-+		VDDIO-supply = <&reg_3p3v>;
-+	};	
 +};
 +
 +&i2c2 {
@@ -458,16 +436,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c2_1>;
 +	status = "okay";
-+
-+	mt9m111@5d {
-+		compatible = "micron,mt9m111";
-+		reg = <0x5d>;
-+		clocks = <&clks 201>;
-+		clock-names = "csi_mclk";
-+		csi_id = <1>;
-+		mclk = <24000000>;
-+		mclk_source = <0>;
-+	};
 +};
 +
 +&i2c3 {
