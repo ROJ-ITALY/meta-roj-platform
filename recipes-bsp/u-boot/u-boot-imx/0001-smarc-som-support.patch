@@ -1,6 +1,6 @@
-From e7d2a3d0d41ea9a1379de1a40764dc708d6d1f10 Mon Sep 17 00:00:00 2001
+From 09c9750bce0526193971a29a7811b755a966d237 Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Tue, 15 Oct 2019 16:18:59 +0200
+Date: Tue, 19 Nov 2019 09:16:12 +0100
 Subject: [PATCH] smarc-som-support
 
 
@@ -142,10 +142,10 @@ index 0000000..d246ff9
 +};
 diff --git a/arch/arm/dts/imx6qdl-smarc.dtsi b/arch/arm/dts/imx6qdl-smarc.dtsi
 new file mode 100644
-index 0000000..f1459c4
+index 0000000..7e37f6f
 --- /dev/null
 +++ b/arch/arm/dts/imx6qdl-smarc.dtsi
-@@ -0,0 +1,1018 @@
+@@ -0,0 +1,986 @@
 +/*
 + * Copyright 2012-2015 Freescale Semiconductor, Inc.
 + * Copyright 2011 Linaro Ltd.
@@ -181,7 +181,7 @@ index 0000000..f1459c4
 +		};
 +	};
 +
-+	regulators {
++	regulators: regulators {
 +		compatible = "simple-bus";
 +		#address-cells = <1>;
 +		#size-cells = <0>;
@@ -236,20 +236,6 @@ index 0000000..f1459c4
 +		spdif-in;
 +	};
 +
-+	sound {
-+		compatible = "fsl,imx6q-sabrelite-sgtl5000",
-+					 "fsl,imx-audio-sgtl5000";
-+		model = "imx6q-sabrelite-sgtl5000";
-+		ssi-controller = <&ssi1>;
-+		audio-codec = <&codec>;
-+		audio-routing =
-+						"MIC_IN", "Mic Jack",
-+						"Mic Jack", "Mic Bias",
-+						"Headphone Jack", "HP_OUT";
-+						mux-int-port = <1>;
-+						mux-ext-port = <3>;
-+	};
-+
 +	mxcfb1: fb@0 {
 +		compatible = "fsl,mxc_sdc_fb";
 +		disp_dev = "hdmi";
@@ -292,7 +278,7 @@ index 0000000..f1459c4
 +		status = "disabled";
 +	};
 +
-+	v4l2_cap_0 {
++	v4l20: v4l2_cap_0 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <0>;
@@ -300,7 +286,7 @@ index 0000000..f1459c4
 +		status = "okay";
 +	};
 +
-+	v4l2_cap_1 {
++	v4l21: v4l2_cap_1 {
 +		compatible = "fsl,imx6q-v4l2-capture";
 +		ipu_id = <0>;
 +		csi_id = <1>;
@@ -313,7 +299,7 @@ index 0000000..f1459c4
 +		status = "okay";
 +	};
 +
-+	lcd@0 {
++	lcd: lcd@0 {
 +		compatible = "fsl,lcd";
 +		ipu_id = <0>;
 +		disp_id = <0>;
@@ -443,14 +429,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c1_1>;
 +	status = "okay";
-+
-+	codec: sgtl5000@0a {
-+		compatible = "fsl,sgtl5000";
-+		reg = <0x0a>;
-+		clocks = <&clks 201>;
-+		VDDA-supply = <&reg_1p8v>;
-+		VDDIO-supply = <&reg_3p3v>;
-+	};	
 +};
 +
 +&i2c2 {
@@ -458,16 +436,6 @@ index 0000000..f1459c4
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_i2c2_1>;
 +	status = "okay";
-+
-+	mt9m111@5d {
-+		compatible = "micron,mt9m111";
-+		reg = <0x5d>;
-+		clocks = <&clks 201>;
-+		clock-names = "csi_mclk";
-+		csi_id = <1>;
-+		mclk = <24000000>;
-+		mclk_source = <0>;
-+	};
 +};
 +
 +&i2c3 {
@@ -3101,136 +3069,6 @@ index 0000000..49a2e6f
 +#endif /*CONFIG_ANDROID_RECOVERY*/
 +
 +#endif /*CONFIG_FSL_FASTBOOT*/
-diff --git a/configs/mx6dlenuc_1GB_defconfig b/configs/mx6dlenuc_1GB_defconfig
-new file mode 100644
-index 0000000..98a0b5b
---- /dev/null
-+++ b/configs/mx6dlenuc_1GB_defconfig
-@@ -0,0 +1,59 @@
-+CONFIG_ARM=y
-+CONFIG_ARCH_MX6=y
-+CONFIG_TARGET_MX6QSMARC=y
-+CONFIG_VIDEO=y
-+CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/mx6dl_1GB.cfg,MX6DL"
-+CONFIG_BOOTDELAY=1
-+# CONFIG_CONSOLE_MUX is not set
-+CONFIG_SYS_CONSOLE_IS_IN_ENV=y
-+CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
-+CONFIG_HUSH_PARSER=y
-+CONFIG_CMD_BOOTZ=y
-+# CONFIG_CMD_IMLS is not set
-+# CONFIG_CMD_FLASH is not set
-+CONFIG_CMD_MEMTEST=y
-+CONFIG_CMD_MMC=y
-+CONFIG_CMD_I2C=y
-+CONFIG_CMD_USB=y
-+CONFIG_CMD_DFU=y
-+CONFIG_CMD_USB_MASS_STORAGE=y
-+CONFIG_CMD_GPIO=y
-+CONFIG_CMD_DHCP=y
-+CONFIG_CMD_MII=y
-+CONFIG_CMD_PING=y
-+CONFIG_CMD_CACHE=y
-+CONFIG_CMD_EXT2=y
-+CONFIG_CMD_EXT4=y
-+CONFIG_CMD_EXT4_WRITE=y
-+CONFIG_CMD_FAT=y
-+CONFIG_CMD_FS_GENERIC=y
-+CONFIG_DFU_MMC=y
-+CONFIG_USB=y
-+CONFIG_USB_STORAGE=y
-+CONFIG_USB_GADGET=y
-+CONFIG_CI_UDC=y
-+CONFIG_USB_GADGET_DOWNLOAD=y
-+CONFIG_G_DNL_MANUFACTURER="FSL"
-+CONFIG_G_DNL_VENDOR_NUM=0x0525
-+CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
-+# CONFIG_VIDEO_SW_CURSOR is not set
-+# CONFIG_OF_LIBFDT=y
-+
-+CONFIG_DEFAULT_DEVICE_TREE="imx6dl-enuc"
-+CONFIG_OF_CONTROL=y
-+# CONFIG_BLK is not set
-+CONFIG_DM_GPIO=y
-+# CONFIG_DM_PCA953X is not set
-+# CONFIG_DM_I2C is not set
-+CONFIG_DM_MMC=y
-+# CONFIG_DM_MMC_OPS is not set
-+CONFIG_PINCTRL=y
-+CONFIG_PINCTRL_IMX6=y
-+# CONFIG_DM_PMIC is not set
-+# CONFIG_DM_PMIC_PFUZE100 is not set
-+CONFIG_DM_REGULATOR=y
-+# CONFIG_DM_REGULATOR_PFUZE100 is not set
-+CONFIG_DM_REGULATOR_FIXED=y
-+CONFIG_DM_REGULATOR_GPIO=y
-+# CONFIG_DM_ETH is not set
-+CONFIG_DM_USB=y
-diff --git a/configs/mx6qenuc_2GB_defconfig b/configs/mx6qenuc_2GB_defconfig
-new file mode 100644
-index 0000000..779d2c6
---- /dev/null
-+++ b/configs/mx6qenuc_2GB_defconfig
-@@ -0,0 +1,59 @@
-+CONFIG_ARM=y
-+CONFIG_ARCH_MX6=y
-+CONFIG_TARGET_MX6QSMARC=y
-+CONFIG_VIDEO=y
-+CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=board/freescale/mx6qsmarc/imximage_2GB.cfg,MX6Q"
-+CONFIG_BOOTDELAY=1
-+# CONFIG_CONSOLE_MUX is not set
-+CONFIG_SYS_CONSOLE_IS_IN_ENV=y
-+CONFIG_SYS_CONSOLE_OVERWRITE_ROUTINE=y
-+CONFIG_HUSH_PARSER=y
-+CONFIG_CMD_BOOTZ=y
-+# CONFIG_CMD_IMLS is not set
-+# CONFIG_CMD_FLASH is not set
-+CONFIG_CMD_MEMTEST=y
-+CONFIG_CMD_MMC=y
-+CONFIG_CMD_I2C=y
-+CONFIG_CMD_USB=y
-+CONFIG_CMD_DFU=y
-+CONFIG_CMD_USB_MASS_STORAGE=y
-+CONFIG_CMD_GPIO=y
-+CONFIG_CMD_DHCP=y
-+CONFIG_CMD_MII=y
-+CONFIG_CMD_PING=y
-+CONFIG_CMD_CACHE=y
-+CONFIG_CMD_EXT2=y
-+CONFIG_CMD_EXT4=y
-+CONFIG_CMD_EXT4_WRITE=y
-+CONFIG_CMD_FAT=y
-+CONFIG_CMD_FS_GENERIC=y
-+CONFIG_DFU_MMC=y
-+CONFIG_USB=y
-+CONFIG_USB_STORAGE=y
-+CONFIG_USB_GADGET=y
-+CONFIG_CI_UDC=y
-+CONFIG_USB_GADGET_DOWNLOAD=y
-+CONFIG_G_DNL_MANUFACTURER="FSL"
-+CONFIG_G_DNL_VENDOR_NUM=0x0525
-+CONFIG_G_DNL_PRODUCT_NUM=0xa4a5
-+# CONFIG_VIDEO_SW_CURSOR is not set
-+# CONFIG_OF_LIBFDT=y
-+
-+CONFIG_DEFAULT_DEVICE_TREE="imx6q-enuc"
-+CONFIG_OF_CONTROL=y
-+# CONFIG_BLK is not set
-+CONFIG_DM_GPIO=y
-+# CONFIG_DM_PCA953X is not set
-+# CONFIG_DM_I2C is not set
-+CONFIG_DM_MMC=y
-+# CONFIG_DM_MMC_OPS is not set
-+CONFIG_PINCTRL=y
-+CONFIG_PINCTRL_IMX6=y
-+# CONFIG_DM_PMIC is not set
-+# CONFIG_DM_PMIC_PFUZE100 is not set
-+CONFIG_DM_REGULATOR=y
-+# CONFIG_DM_REGULATOR_PFUZE100 is not set
-+CONFIG_DM_REGULATOR_FIXED=y
-+CONFIG_DM_REGULATOR_GPIO=y
-+# CONFIG_DM_ETH is not set
-+CONFIG_DM_USB=y
 diff --git a/include/configs/mx6qsmarc.h b/include/configs/mx6qsmarc.h
 new file mode 100644
 index 0000000..4261eee

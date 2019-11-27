@@ -280,7 +280,7 @@ index 0000000..47239e8
 +		status = "okay";
 +	};
 +
-+	lcd@0 {
++	lcd: lcd@0 {
 +		compatible = "fsl,lcd";
 +		ipu_id = <0>;
 +		disp_id = <0>;
