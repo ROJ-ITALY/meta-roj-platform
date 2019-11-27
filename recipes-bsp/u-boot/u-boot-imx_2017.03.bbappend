@@ -10,4 +10,5 @@ SRC_URI_append = " \
 	file://0003-video-mode-settings.patch \
 	file://0004-disable_blankscreen_console.patch \
 	file://0005-disable_cursor_blink.patch \
+	file://0006-hdmi-on-mxcfb0.patch \
 "

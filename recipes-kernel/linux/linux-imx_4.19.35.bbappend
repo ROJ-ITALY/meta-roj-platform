@@ -13,6 +13,7 @@ SRC_URI_append = " \
 	file://0003-i210-support.patch \
 	file://0004-add-sn8000-support.patch \
 	file://0005-spi-flash-support.patch \
+	file://0006-vpu-disabled.patch \
 	file://brcmfmac43362-sdio.bin \
 	file://brcmfmac43362-sdio.txt \
 	"

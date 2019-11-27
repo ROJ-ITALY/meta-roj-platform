@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Media Player
+Comment=QML media player
+Icon=multimedia-player
+TryExec=/usr/share/examples/multimedia/video/qmlvideofx/qmlvideofx
+Exec=/usr/share/examples/multimedia/video/qmlvideofx/qmlvideofx
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=AudioVideo;

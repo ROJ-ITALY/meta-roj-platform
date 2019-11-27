@@ -1,0 +1,20 @@
+From 4f6751d87d29dfa5999ec0f0750cff8957cbd6a0 Mon Sep 17 00:00:00 2001
+From: Paola Martiner Giore <paola.martiner@roj.com>
+Date: Mon, 25 Nov 2019 14:27:55 +0100
+Subject: [PATCH] vpu-disabled
+
+
+diff --git a/arch/arm/boot/dts/imx6qdl-smarc.dtsi b/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+index 41805af..290ca84 100644
+--- a/arch/arm/boot/dts/imx6qdl-smarc.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-smarc.dtsi
+@@ -982,5 +982,5 @@
+ };
+ 
+ &vpu {
+-	status = "okay";
++	status = "disabled";
+ };
+-- 
+2.7.4
+
