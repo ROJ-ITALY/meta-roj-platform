@@ -15,6 +15,7 @@ SRC_URI_append = " \
 	file://0005-spi-flash-support.patch \
 	file://brcmfmac43362-sdio.bin \
 	file://brcmfmac43362-sdio.txt \
+	file://rt2870.bin \
 	"
 
 SRC_URI_append_imx6qenuc = " \
@@ -32,6 +33,8 @@ do_install_append () {
 	install -d ${D}/lib/firmware/brcm/
 	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.bin ${D}/lib/firmware/brcm/
 	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.txt ${D}/lib/firmware/brcm/
+	install -m 0644 ${WORKDIR}/rt2870.bin ${D}/lib/firmware/
 }
 
 FILES_kernel-firmware-brcmfmac43362-sdio += "/lib/firmware/brcm/"
+FILES_kernel-firmware-rt2870 += "/lib/firmware/"

@@ -6,7 +6,7 @@ do_install () {
     install -d ${D}/home/root
 
     # Write image version to file
-    echo "y2.6-r1.0" > ${D}/home/root/image_version
+    echo "y2.6-r1.1" > ${D}/home/root/image_version
     chmod 644 ${D}/home/root/image_version
 }
 
