@@ -1,0 +1,22 @@
+From ad9f34497a2d6b0788ba0bd79e64eb1e5c94a076 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Fri, 20 Dec 2019 14:33:23 +0100
+Subject: [PATCH] hdmi on mxcfb0
+
+
+diff --git a/include/configs/mx6smarc_common.h b/include/configs/mx6smarc_common.h
+index c56fbc1..c80194c 100644
+--- a/include/configs/mx6smarc_common.h
++++ b/include/configs/mx6smarc_common.h
+@@ -161,7 +161,7 @@
+ 		"fi\0" \
+ 	EMMC_ENV	  \
+ 	"smp=" SYS_NOSMP "\0"\
+-	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdevk}p${mmcrootpart} rootwait rw video=mxcfb0:dev=ldb,800x600M@60,if=RGB24,fbpix=RGB32 video=mxcfb1:dev=hdmi,1920x1080M@60,if=RGB24,fbpix=RGB32 consoleblank=0 vt.global_cursor_default=0\0" \
++	"mmcsetroot=setenv mmcroot /dev/mmcblk${mmcdevk}p${mmcrootpart} rootwait rw video=mxcfb0:dev=hdmi,1280x720M@60,if=RGB24,fbpix=RGB32 consoleblank=0 vt.global_cursor_default=0\0" \
+ 	"mmcargs=run mmcsetroot;setenv bootargs console=${console},${baudrate} ${smp} " \
+ 		"root=${mmcroot}\0" \
+ 	"loadbootscript=" \
+-- 
+2.17.1
+

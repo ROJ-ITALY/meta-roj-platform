@@ -2,8 +2,8 @@
 Name=Media Player
 Comment=QML media player
 Icon=multimedia-player
-TryExec=/usr/share/qt5/examples/multimedia/video/qmlvideofx/qmlvideofx
-Exec=/usr/share/qt5/examples/multimedia/video/qmlvideofx/qmlvideofx
+TryExec=/usr/share/qt5/examples/multimedia/video/qmlvideo/qmlvideo
+Exec=/usr/share/qt5/examples/multimedia/video/qmlvideo/qmlvideo
 StartupNotify=true
 Terminal=false
 Type=Application

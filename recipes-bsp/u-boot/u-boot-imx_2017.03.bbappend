@@ -15,4 +15,5 @@ SRC_URI_append = " \
 	file://0008-fix-usb-hub-init.patch \
 	file://0009-support-1GB-ram.patch \
 	file://0010-support-2GB-ram.patch \
+	file://0011-hdmi-on-mxcfb0.patch \
 "
