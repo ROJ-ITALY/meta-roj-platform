@@ -52,5 +52,11 @@ IMAGE_INSTALL_append = " wpa-supplicant"
 # Add net custom scripts
 IMAGE_INSTALL_append = " net-scripts"
 
+# Add usb-modeswitch
+IMAGE_INSTALL_append = " usb-modeswitch"
+
+# Add ethernet configuration (only for eth2: network interface linked to Huawei E3372 LTE/3G modem
+IMAGE_INSTALL_append = " ethernet-config"
+
 # Rootfs on tar
 IMAGE_FSTYPES = "tar"
