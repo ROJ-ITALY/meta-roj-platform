@@ -41,5 +41,8 @@ IMAGE_INSTALL_append = " qtbase \
 # Add icon to run qml media player
 IMAGE_INSTALL_append = " qml-media-player"
 
+# Automount usb key
+IMAGE_INSTALL_append = " udev-extraconf"
+
 # ROOTFS type
 IMAGE_FSTYPES = "tar"
