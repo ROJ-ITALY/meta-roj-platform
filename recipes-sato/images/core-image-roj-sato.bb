@@ -1,4 +1,6 @@
-# Customize core-image-sato for demo
+# Customize core-image-roj-sato for demo
+
+require recipes-sato/images/core-image-sato.bb
 
 # Add gstreamer1.0
 IMAGE_INSTALL_append = " packagegroup-fsl-gstreamer1.0-full"
@@ -36,7 +38,7 @@ IMAGE_INSTALL_append = " qtbase \
 			"
 
 # Add Oracle Java
-#IMAGE_INSTALL_append = " oracle-jse-jre-headful "
+##IMAGE_INSTALL_append = " oracle-jse-jre-headful "
 
 # Add icon to run qml media player
 IMAGE_INSTALL_append = " qml-media-player"
