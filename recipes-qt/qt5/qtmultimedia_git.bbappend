@@ -1,3 +1,3 @@
 #Add feautures
 
-PACKAGECONFIG_append = " gstreamer"
+PACKAGECONFIG_append = " gstreamer examples"
