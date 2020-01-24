@@ -28,7 +28,7 @@ IMAGE_INSTALL_append = " python3 \
 			python3-datetime \
 			"
 
-# Add Qt5.11.3 libraries and plugins
+# Add Qt libraries and plugins
 IMAGE_INSTALL_append = " qtbase \
 			qtbase-plugins \
 			qtmultimedia \
