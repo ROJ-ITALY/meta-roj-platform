@@ -2,6 +2,8 @@
 
 require recipes-core/images/core-image-minimal.bb
 
+IMAGE_FEATURES_append = " ssh-server-openssh"
+
 # Add bash and aliases
 IMAGE_INSTALL_append = " bash bashrc"
 
@@ -38,6 +40,7 @@ IMAGE_INSTALL_append = " python3 \
 			python3-io \
 			python3-shell \
 			python3-datetime \
+			python3-pip \
 			"
 
 # Add usbutils for lsusb
@@ -57,6 +60,9 @@ IMAGE_INSTALL_append = " usb-modeswitch"
 
 # Add ethernet configuration (only for eth2: network interface linked to Huawei E3372 LTE/3G modem
 IMAGE_INSTALL_append = " ethernet-config"
+
+# Automount usb key
+IMAGE_INSTALL_append = " udev-extraconf"
 
 # Rootfs on tar
 IMAGE_FSTYPES = "tar"
