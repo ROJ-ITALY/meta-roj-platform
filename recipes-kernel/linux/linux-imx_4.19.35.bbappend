@@ -30,9 +30,9 @@ SRC_URI_append_imx6soloenuc = " \
 deltask copy_defconfig
 
 do_install_append () {
-	install -d ${D}/lib/firmware/brcm/
-	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.bin ${D}/lib/firmware/brcm/
-	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.txt ${D}/lib/firmware/brcm/
+	install -d ${D}${base_libdir}/firmware/brcm/
+	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.bin ${D}${base_libdir}/firmware/brcm/
+	install -m 0644 ${WORKDIR}/brcmfmac43362-sdio.txt ${D}${base_libdir}/firmware/brcm/
 }
 
-FILES_kernel-firmware-brcmfmac43362-sdio += "/lib/firmware/brcm/"
+FILES_kernel-firmware-brcmfmac43362-sdio += "${base_libdir}/firmware/brcm/"
