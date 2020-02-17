@@ -58,8 +58,11 @@ IMAGE_INSTALL_append = " net-scripts"
 # Add usb-modeswitch
 IMAGE_INSTALL_append = " usb-modeswitch"
 
-# Add ethernet configuration (only for eth2: network interface linked to Huawei E3372 LTE/3G modem
+# Add ethernet configuration
 IMAGE_INSTALL_append = " ethernet-config"
+
+# Add startup scripts
+IMAGE_INSTALL_append = " startup-scripts"
 
 # Automount usb key
 IMAGE_INSTALL_append = " udev-extraconf"

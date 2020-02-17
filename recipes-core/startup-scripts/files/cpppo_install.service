@@ -1,0 +1,12 @@
+[Unit]
+Description=Script to install cpppo python module if is not already installed
+ConditionFileIsExecutable=/home/root/cpppo_install.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=root
+ExecStart=/home/root/cpppo_install.sh
+
+[Install]
+WantedBy=multi-user.target
