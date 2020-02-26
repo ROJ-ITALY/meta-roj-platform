@@ -46,5 +46,8 @@ IMAGE_INSTALL_append = " qml-media-player"
 # Automount usb key
 IMAGE_INSTALL_append = " udev-extraconf"
 
+# Add Entropy Daemon
+IMAGE_INSTALL_append = " haveged"
+
 # ROOTFS type
 IMAGE_FSTYPES = "tar"
