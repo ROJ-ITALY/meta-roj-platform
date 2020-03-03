@@ -1,0 +1,24 @@
+From 479a1215e6132aa5210425d87612b389b2316d67 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Tue, 3 Mar 2020 10:20:09 +0100
+Subject: [PATCH] disable StartLimitIntervalSec
+
+
+diff --git a/src/import/contrib/init/systemd/docker.service b/src/import/contrib/init/systemd/docker.service
+index 5174631..f9be73d 100644
+--- a/src/import/contrib/init/systemd/docker.service
++++ b/src/import/contrib/init/systemd/docker.service
+@@ -27,8 +27,8 @@ Delegate=yes
+ KillMode=process
+ # restart the docker process if it exits prematurely
+ Restart=on-failure
+-StartLimitBurst=3
+-StartLimitInterval=60s
++#StartLimitBurst=3
++StartLimitInterval=0
+ 
+ [Install]
+ WantedBy=multi-user.target
+-- 
+2.17.1
+
