@@ -10,3 +10,6 @@ IMAGE_INSTALL_append = " docker docker-contrib ca-certificates"
 
 # Add Entropy Daemon
 IMAGE_INSTALL_append = " haveged"
+
+# Add connman network manager
+IMAGE_INSTALL_append = " connman connman-client"
