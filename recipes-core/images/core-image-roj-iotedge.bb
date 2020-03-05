@@ -13,3 +13,6 @@ IMAGE_INSTALL_append = " haveged"
 
 # Add connman network manager
 IMAGE_INSTALL_append = " connman connman-client"
+
+# Add IoTEdge
+IMAGE_INSTALL_append = " iotedge-cli iotedge-daemon"
