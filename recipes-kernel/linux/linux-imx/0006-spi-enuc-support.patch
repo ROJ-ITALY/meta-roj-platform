@@ -1,0 +1,39 @@
+From 2884a56195d6504d028fbd412b9c7998352e9255 Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Wed, 22 Jul 2020 09:41:18 +0200
+Subject: [PATCH] spi enuc support
+
+
+diff --git a/arch/arm/boot/dts/imx6dl-enuc.dts b/arch/arm/boot/dts/imx6dl-enuc.dts
+index 0c4b4a96d..d3f350170 100644
+--- a/arch/arm/boot/dts/imx6dl-enuc.dts
++++ b/arch/arm/boot/dts/imx6dl-enuc.dts
+@@ -110,6 +110,10 @@
+ 		};	
+ };
+ 
++&ecspi2 {
++	status = "okay";
++};
++
+ &ecspi4 {
+ 	status = "okay";
+ 
+diff --git a/arch/arm/boot/dts/imx6q-enuc.dts b/arch/arm/boot/dts/imx6q-enuc.dts
+index 2d525d850..88a4dab5f 100644
+--- a/arch/arm/boot/dts/imx6q-enuc.dts
++++ b/arch/arm/boot/dts/imx6q-enuc.dts
+@@ -110,6 +110,10 @@
+ 		};	
+ };
+ 
++&ecspi2 {
++	status = "okay";
++};
++
+ &ecspi4 {
+ 	status = "okay";
+ 
+-- 
+2.17.1
+
