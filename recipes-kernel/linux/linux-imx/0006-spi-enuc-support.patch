@@ -1,11 +1,11 @@
-From 37dca71bbc34e534a5d819700d10e2f2f8faff41 Mon Sep 17 00:00:00 2001
+From 412d8a1ef2381e88db1ac90d306fb674532cffcf Mon Sep 17 00:00:00 2001
 From: Stefano Gurrieri <stefano.gurrieri@roj.com>
-Date: Wed, 22 Jul 2020 15:14:09 +0200
+Date: Mon, 27 Jul 2020 09:21:53 +0200
 Subject: [PATCH] spi enuc support
 
 
 diff --git a/arch/arm/boot/dts/imx6dl-enuc.dts b/arch/arm/boot/dts/imx6dl-enuc.dts
-index 0c4b4a96d..9e1f708b7 100644
+index 0c4b4a96d..40a41f234 100644
 --- a/arch/arm/boot/dts/imx6dl-enuc.dts
 +++ b/arch/arm/boot/dts/imx6dl-enuc.dts
 @@ -85,6 +85,24 @@
@@ -41,7 +41,7 @@ index 0c4b4a96d..9e1f708b7 100644
  &ecspi4 {
  	status = "okay";
  
-@@ -125,3 +144,8 @@
+@@ -125,3 +144,20 @@
  		reg = <1>;
  	};
  };
@@ -49,9 +49,21 @@ index 0c4b4a96d..9e1f708b7 100644
 +/*SPI1*/
 +&ecspi2 {
 +	status = "okay";
++
++	flash@0 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <0>;
++	};
++
++	flash@1 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <1>;
++	};
 +};
 diff --git a/arch/arm/boot/dts/imx6q-enuc.dts b/arch/arm/boot/dts/imx6q-enuc.dts
-index 2d525d850..7554e65f1 100644
+index 2d525d850..918743931 100644
 --- a/arch/arm/boot/dts/imx6q-enuc.dts
 +++ b/arch/arm/boot/dts/imx6q-enuc.dts
 @@ -85,6 +85,24 @@
@@ -87,7 +99,7 @@ index 2d525d850..7554e65f1 100644
  &ecspi4 {
  	status = "okay";
  
-@@ -125,3 +144,8 @@
+@@ -125,3 +144,20 @@
  		reg = <1>;
  	};
  };
@@ -95,6 +107,18 @@ index 2d525d850..7554e65f1 100644
 +/*SPI1*/
 +&ecspi2 {
 +	status = "okay";
++
++	flash@0 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <0>;
++	};
++
++	flash@1 {
++		compatible = "w25x20", "jedec,spi-nor";
++		spi-max-frequency = <20000000>;
++		reg = <1>;
++	};
 +};
 -- 
 2.17.1
