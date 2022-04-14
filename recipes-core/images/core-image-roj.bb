@@ -64,5 +64,8 @@ IMAGE_INSTALL_append = " ethernet-config"
 # Automount usb key
 IMAGE_INSTALL_append = " udev-extraconf"
 
+# Add SOEM library and tools
+IMAGE_INSTALL_append = " soem"
+
 # Rootfs on tar
 IMAGE_FSTYPES = "tar"
