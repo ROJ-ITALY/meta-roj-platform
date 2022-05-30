@@ -1,0 +1,749 @@
+From 07b6512f3e1dbde920fe16b35bd7f6a0284b330e Mon Sep 17 00:00:00 2001
+From: Stefano Gurrieri <stefano.gurrieri@roj.com>
+Date: Mon, 30 May 2022 14:34:48 +0200
+Subject: [PATCH] wam ecat test
+
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index baf26bd..e36ec12 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -110,4 +110,5 @@ if(BUILD_TESTS)
+   add_subdirectory(test/linux/slaveinfo)
+   add_subdirectory(test/linux/eepromtool)
+   add_subdirectory(test/linux/simple_test)
++  add_subdirectory(test/linux/wam_ecat_test)
+ endif()
+diff --git a/test/linux/wam_ecat_test/CMakeLists.txt b/test/linux/wam_ecat_test/CMakeLists.txt
+new file mode 100644
+index 0000000..27a4b76
+--- /dev/null
++++ b/test/linux/wam_ecat_test/CMakeLists.txt
+@@ -0,0 +1,5 @@
++
++set(SOURCES wam_ecat_test.c)
++add_executable(wam_ecat_test ${SOURCES})
++target_link_libraries(wam_ecat_test soem)
++install(TARGETS wam_ecat_test DESTINATION bin)
+diff --git a/test/linux/wam_ecat_test/wam_ecat_test.c b/test/linux/wam_ecat_test/wam_ecat_test.c
+new file mode 100644
+index 0000000..8aef8e0
+--- /dev/null
++++ b/test/linux/wam_ecat_test/wam_ecat_test.c
+@@ -0,0 +1,713 @@
++/** \file
++ * \brief WAM Ecat Test with Simple Open EtherCAT Master
++ *
++ * Usage : wam_ecat_test -i NIin -o NIout -m Mode -f BinFile -v
++ *
++ *		-i NIin		network interface connected to EcatIN port
++ *		-o NIout	network interface connected to EcatOUT port
++ *		-m Mode		run mode
++ *						'r' for reading eeprom data from both ports
++ *						't' for writing eeprom data in EcatIN port, reading them from EcatOUT port, then compare and retund PASS/FAIL
++ *		-f BinFile	binary file to be written in Ecat eeprom (required if Mode='t')
++ *		-v			print debug information
++ *
++ * ROJ Andrea Pizzato 2022
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "ethercat.h"
++#include <getopt.h>
++
++#include <unistd.h>
++
++/*! ========  DEFINES  ======== */
++
++#define MAXBUF		 16384
++#define MINBUF		 128
++#define ADP_ADDR	 0
++
++/*! ========  STRUCTURES & ENUMS  ======== */
++
++typedef enum
++{
++	openIN_closeOUT = 0,
++	closeIN_openOUT,
++	resetIN_resetOUT
++} PortStatus_T;
++
++typedef enum  
++{
++	mode_none = 0,
++	mode_read_read,
++	mode_write_read
++} Mode_T;
++
++typedef enum 
++{
++	optInvalid = 1,
++	optMissing,
++	openIF,
++	setEEPROMreg,
++	getEEPROMreg,
++	sendBRD,
++	bufferSMALL,
++	eepromRD,
++	eepromWR,
++	fileRD,
++	fileEmpty,
++	unknown
++} ErroroCode_T;
++
++typedef struct 
++{
++	char *if0_name;
++	char *if1_name;
++	char *filename;
++	Mode_T mode;
++	boolean verbose;
++} Args_T;
++
++/*! ========  PROTOTYPES (main) ======== */
++
++void calc_crc(uint8 *crc, uint8 b);
++uint16 SIIcrc(uint8 *buf);
++void ReadCommandLine(int argc, char *const argv[], Args_T *args);
++void Usage(void);
++void exit_on_error(ErroroCode_T error_code, void *info);
++void open_connection(char *if_name, boolean verbose);
++void close_connection(char *if_name, boolean verbose);
++void set_dlctl(PortStatus_T port_status, boolean verbose);
++void get_dlstat(boolean verbose);
++void send_broadcast(boolean verbose);
++void eeprom_read(int start, int length);
++void eeprom_write(int start, int length);
++void print_eepprom_data(void);
++int read_input_bin(char *filename, boolean verbose);
++void write_input_bin(int filesize, boolean verbose);
++void eeprom_compare(int filesize, boolean verbose);
++void wam_ecat_test(Args_T *args);
++
++/*! ========  GLOBAL VARIABILES  ======== */
++
++extern char *optarg;
++extern int optind;
++
++char *progname;
++uint8 WR_buf[MAXBUF];
++uint8 RD_buf[MAXBUF];
++
++/*! ========  MAIN  ======== */
++
++/** Main program
++ *
++ * @return 0 on success, -1 on error
++ */
++int main(int argc, char *argv[])
++{
++	Args_T args;
++
++	// default values
++	args.if0_name = NULL;
++	args.if1_name = NULL;
++	args.filename = NULL;
++	args.mode = mode_none;
++	args.verbose = FALSE;
++
++	// save the program name
++	progname = argv[0];
++
++	// scan the command line for arguments extraction
++	ReadCommandLine(argc, argv, &args);
++
++	printf("\n");
++	if (args.verbose)
++	{
++		printf("SOEM (Simple Open EtherCAT Master) \n");
++		printf("WAM Ecat test \n");
++	}
++
++	// run the test for WAM board
++	wam_ecat_test(&args);
++
++	return(0);
++}
++
++/*! ========  FUNCTIONS ======== */
++
++void calc_crc(uint8 *crc, uint8 b)
++{
++	int j;
++
++	*crc ^= b;
++	for (j = 0; j <= 7; j++)
++	{
++		if (*crc & 0x80) *crc = (*crc << 1) ^ 0x07;
++		else            *crc = (*crc << 1);
++	}
++}
++
++uint16 SIIcrc(uint8 *buf)
++{
++	int i;
++	uint8 crc = 0xff;
++
++	for (i = 0; i <= 13; i++) calc_crc(&crc, *(buf++));
++
++	return (uint16)crc;
++}
++
++/** Scan the command line and fill the arguments structure
++ *
++ * @param[in] argc = command line arguments number
++ * @param[in] argv[] = command line arguments string vector 
++ * @param[in] *args = pointer to arguments structure
++ * @return none
++ */
++void ReadCommandLine(int argc, char *const argv[], Args_T *args)
++{
++	int opt;
++	int argv_idx;
++
++	// pass the command line to 'getopt' function
++	// this function search the option identifiers and return the related argument
++	// reminder: wam_ecat_test.exe -i NIin -o NIout -m Mode -f BinFile -v Verbosity
++	while ((opt = getopt(argc, argv, "i:o:m:f:v")) != -1) 
++	{
++		argv_idx = optind - 1; // find argment index in argv[]
++		switch (opt)
++		{
++			// network interface connected to EcatIN port
++			case 'i':
++				if (optarg[0] == '-') exit_on_error(optMissing, (void *)&(opt));
++				args->if0_name = argv[argv_idx];
++				break;
++			// network interface connected to EcatIN port
++			case 'o':
++				if (optarg[0] == '-') exit_on_error(optMissing, (void *)&(opt));
++				args->if1_name = argv[argv_idx];
++				break;
++			// run mode
++			case 'm':
++				if (optarg[0] == '-') exit_on_error(optMissing, (void *)&(opt));
++					 if (optarg[0] == 'r') args->mode = mode_read_read;
++				else if (optarg[0] == 't') args->mode = mode_write_read;
++				else exit_on_error(optInvalid, (void *)&(opt));
++				break;
++			// binary file to be written in Ecat eeprom
++			case 'f':
++				if (optarg[0] == '-') exit_on_error(optMissing, (void *)&(opt));
++				args->filename = argv[argv_idx];
++				break;
++			// print debug information
++			case 'v':
++				args->verbose = TRUE;
++				break;
++			// help or bad data
++			//case BADCH:
++			//case BADARG:
++			//	Usage();
++			//	exit(-1);
++
++			default:
++				// nothing to do
++				Usage();
++				exit(-1);
++		}
++	}
++
++	// check if required arguments are available
++	if ((args->if0_name != NULL) &&
++		(args->if1_name != NULL) &&
++		((args->mode == mode_read_read) || ((args->mode == mode_write_read) && (args->filename != NULL))))
++	{
++		// all parameters inserted
++		return;
++	}
++	else
++	{
++		// some parameter omitted
++		Usage();
++		exit(-1);
++	}
++}
++
++/** Print the program usage and the list of available networks
++ *
++ * @param none
++ * @return none
++ */
++void Usage(void)
++{
++	ec_adaptert *adapter = NULL;
++
++	printf("Usage: %s [options] \n"
++
++	"  -i <NIin>    : network interface connected to EcatIN port \n"
++	"                 mandatory \n"
++
++	"  -o <NIout>   : network interface connected to EcatOUT port \n"
++	"                 mandatory \n"
++
++	"  -m <Mode>    : run mode \n"
++	"                 'r' = read eeprom data from both ports \n"
++	"                 't' = write eeprom data via EcatIN, read from EcatOUT, compare, retund PASS or FAIL \n"
++	"                 mandatory \n"
++
++	"  -f <BinFile> : binary file to be written in Ecat eeprom \n"
++	"                 mandatory if Mode = 't' \n"
++
++	"  -v           : show debug info \n"
++	"                 optional, default no info \n\n"
++
++	, progname);
++
++	printf("Available adapters: \n");
++	adapter = ec_find_adapters();
++	while (adapter != NULL)
++	{
++		printf("  - %s  (%s) \n", adapter->name, adapter->desc);
++		adapter = adapter->next;
++	}
++	ec_free_adapters(adapter);
++}
++
++/** In case of error, print info and exit
++ *
++ * @param[in] error_code = enum for error identification
++ * @param[in] *info = void pointer to add indo to printed error
++ * @return none 
++ */
++void exit_on_error(ErroroCode_T error_code, void *info)
++{
++	char tmp = (char)'?';
++	char *ptr = &(tmp);
++	
++	switch (error_code)
++	{
++		case optInvalid:
++			if (info != NULL) ptr = (char *)info;
++			printf("Invalid parameter for [-%s] \n", ptr);
++			Usage();
++			break;
++		case optMissing:
++			if (info != NULL) ptr = (char *)info;
++			printf("Missing parameter for [-%s] \n", ptr);
++			Usage();
++			break;
++		case openIF:
++			if (info != NULL) ptr = (char *)info;
++			printf("No socket connection on %s \n\n", ptr);
++			break;
++		case setEEPROMreg:
++			if (info != NULL) ptr = (char *)info;
++			printf("Error setting %s \n\n", ptr);
++			ec_close();
++			break;
++		case getEEPROMreg:
++			if (info != NULL) ptr = (char *)info;
++			printf("Error getting %s \n\n", ptr);
++			ec_close();
++			break;
++		case sendBRD:
++			printf("No slaves found \n\n");
++			ec_close();
++			break;
++		case bufferSMALL:
++			printf("Application buffers too small \n\n");
++			ec_close();
++			break;
++		case eepromRD:
++			printf("Error reading EEPROM \n\n");
++			ec_close();
++			break;
++		case eepromWR:
++			printf("Error writing EEPROM \n\n");
++			ec_close();
++			break;
++		case fileRD:
++			if (info != NULL) ptr = (char *)info;
++			printf("Error reading file %s \n\n", ptr);
++			ec_close();
++			break;
++		case fileEmpty:
++			printf("EEPROM bin file is empty \n\n");
++			ec_close();
++			break;
++		default:
++			// nothing to do
++			break;
++	}
++	// after print the error info, program exit
++	exit(-1);
++}
++
++/** Open a network interface 
++ *
++ * @param[in] *if_name = pointer to network interface name
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void open_connection(char *if_name, boolean verbose)
++{
++	// open the network interface; exit on error
++	if (ec_init(if_name) <= 0) exit_on_error(openIF, (void*)if_name);
++
++	if (verbose) printf("Open socket connection on %s \n", if_name);
++}
++
++/** Close a network interface
++ *
++ * @param[in] *if_name = pointer to network interface name
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void close_connection(char *if_name, boolean verbose)
++{
++	ec_close();
++
++	if (verbose) printf("Closed socket connection on %s \n", if_name);
++}
++
++/** Set DLCTL register in Ecat controller, for open/close the ports 0/1
++ *
++ * @param[in] port_status = enum for selecting which port to open/close
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void set_dlctl(PortStatus_T port_status, boolean verbose)
++{
++	uint32 dlctl;
++	//int retval;
++
++	     if (port_status == openIN_closeOUT) dlctl = 0x0007FE01; // force open only port 0 (IN) and clode all others
++	else if (port_status == closeIN_openOUT) dlctl = 0x0007FB01; // force open only port 1 (OUT) and clode all others
++	else									 dlctl = 0x0007C001; // reset value, open port 0 and 1
++
++	usleep(100000);
++	ec_APWRw(ADP_ADDR, ECT_REG_DLCTL, dlctl, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(setEEPROMreg, "ECT_REG_DLCTL"); // not clear, sometimes retval = EC_NOFRAME
++
++	if (verbose)
++	{
++		     if (port_status == openIN_closeOUT) printf("Ecat IN open, Ecat OUT closed \n");
++		else if (port_status == closeIN_openOUT) printf("Ecat IN closed, Ecat OUT open \n");
++		else									 printf("Ecat IN\\OUT reset values \n");
++	}
++}
++
++/** Get DLSTAT register in Ecat controller, for ports status
++ *
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void get_dlstat(boolean verbose)
++{
++	uint16 dlstat;
++
++	usleep(100000);
++	dlstat = ec_APRDw(ADP_ADDR, ECT_REG_DLSTAT, EC_TIMEOUTRET);
++	// if (dlstat == 0) exit_on_error(getEEPROMreg, "ECT_REG_DLSTAT"); // not clear, sometimes retval = EC_NOFRAME
++
++	if (verbose) printf("ESC DL status 0x%x \n", dlstat);
++}
++
++/** Send a broadcast message to Ecat controller to addressing it with the slave number
++ *
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void send_broadcast(boolean verbose)
++{
++	int w = 0;
++	int wkc;
++
++	usleep(100000);
++	w = 0;
++	wkc = ec_BRD(0x0000, ECT_REG_TYPE, sizeof(w), &w, EC_TIMEOUTSAFE);
++
++	// Ecat controller didn't respond
++	if (wkc <= 0) exit_on_error(sendBRD, NULL);
++
++	// register the slave number (always 1 in this application)
++	ec_slavecount = wkc;
++	if (verbose) printf("%d slaves found \n", ec_slavecount);
++}
++
++/** Read the Ecat controller's eeprom
++ *
++ * @param[in] start = start address
++ * @param[in] lenght = number of byte to be read
++ * @return none
++ */
++void eeprom_read(int start, int length)
++{
++	uint16 estat;
++	uint8 eepctl;
++	uint32 b4;
++	uint64 b8;
++	//int retval;
++	int i;
++
++	// local buffer is too small, exit
++	if ((start + length) >= MAXBUF) exit_on_error(bufferSMALL, NULL);
++
++	// orce Eeprom from PDI
++	eepctl = 2;
++	ec_APWR(ADP_ADDR, ECT_REG_EEPCFG, sizeof(eepctl), &eepctl, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(setEEPROMreg, "ECT_REG_EEPCFG"); // not clear, sometimes retval = EC_NOFRAME
++
++	// set Eeprom to master
++	eepctl = 0;
++	ec_APWR(ADP_ADDR, ECT_REG_EEPCFG, sizeof(eepctl), &eepctl, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(setEEPROMreg, "ECT_REG_EEPCFG"); // not clear, sometimes retval = EC_NOFRAME
++
++	// read eeprom status
++	estat = 0x0000;
++	ec_APRD(ADP_ADDR, ECT_REG_EEPSTAT, sizeof(estat), &estat, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(getEEPROMreg, "ECT_REG_EEPSTAT"); // not clear, sometimes retval = EC_NOFRAME
++
++	estat = etohs(estat);
++	if (estat & EC_ESTAT_R64) // Ecat controller respond with 64 bytes at a time
++	{
++		for (i = start; i < (start + length); i += 8)
++		{
++			// read the eeprom
++			b8 = ec_readeepromAP(ADP_ADDR, i >> 1, EC_TIMEOUTEEP); // how to understand if timeout was elapsed ??
++			// fill local buffer with 64 byte
++			RD_buf[i] = b8 & 0xFF;
++			RD_buf[i + 1] = (b8 >> 8) & 0xFF;
++			RD_buf[i + 2] = (b8 >> 16) & 0xFF;
++			RD_buf[i + 3] = (b8 >> 24) & 0xFF;
++			RD_buf[i + 4] = (b8 >> 32) & 0xFF;
++			RD_buf[i + 5] = (b8 >> 40) & 0xFF;
++			RD_buf[i + 6] = (b8 >> 48) & 0xFF;
++			RD_buf[i + 7] = (b8 >> 56) & 0xFF;
++		}
++	}
++	else // Ecat controller respond with 64 bytes at a time
++	{
++		for (i = start; i < (start + length); i += 4)
++		{
++			// read the eeprom
++			b4 = ec_readeepromAP(ADP_ADDR, i >> 1, EC_TIMEOUTEEP) & 0xFFFFFFFF; // how to understand if timeout was elapsed ??
++			// fill local buffer with 32 byte
++			RD_buf[i] = b4 & 0xFF;
++			RD_buf[i + 1] = (b4 >> 8) & 0xFF;
++			RD_buf[i + 2] = (b4 >> 16) & 0xFF;
++			RD_buf[i + 3] = (b4 >> 24) & 0xFF;
++		}
++	}
++}
++
++/** Write the Ecat controller's eeprom
++ *
++ * @param[in] start = start address
++ * @param[in] lenght = number of byte to be write
++ * @return none
++ */
++void eeprom_write(int start, int length)
++{
++	uint16 *wbuf;
++	uint8 eepctl;
++	int retval, i;
++
++	// local buffer is too small, exit
++	if ((start + length) >= MAXBUF) exit_on_error(bufferSMALL, NULL);
++
++	// force Eeprom from PDI
++	eepctl = 2;
++	retval = ec_APWR(ADP_ADDR, ECT_REG_EEPCFG, sizeof(eepctl), &eepctl, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(setEEPROMreg, "ECT_REG_EEPCFG"); // not clear, sometimes retval = EC_NOFRAME
++
++	// set Eeprom to master
++	eepctl = 0;
++	retval = ec_APWR(ADP_ADDR, ECT_REG_EEPCFG, sizeof(eepctl), &eepctl, EC_TIMEOUTRET);
++	// if (retval == EC_NOFRAME) exit_on_error(setEEPROMreg, "ECT_REG_EEPCFG"); // not clear, sometimes retval = EC_NOFRAME
++
++	wbuf = (uint16 *)&(WR_buf[0]);
++	for (i = start; i < (start + length); i += 2)
++	{
++		retval = ec_writeeepromAP(ADP_ADDR, i >> 1, *(wbuf + (i >> 1)), EC_TIMEOUTEEP);
++		if (retval <= 0) exit_on_error(eepromWR, NULL);
++	}
++}
++
++/** Print main info stored in Ecat controller's eeprom
++ *
++ * @param none
++ * @return none
++ */
++void print_eepprom_data(void)
++{
++	uint16 *wbuf;
++
++	wbuf = (uint16 *)&(RD_buf[0]);
++
++	printf("  PDI Control      : %4.4X\n", *(wbuf + 0x00));
++	printf("  PDI Config       : %4.4X\n", *(wbuf + 0x01));
++	printf("  Config Alias     : %4.4X\n", *(wbuf + 0x04));
++	printf("  Checksum         : %4.4X\n", *(wbuf + 0x07));
++	printf("    calculated     : %4.4X\n", SIIcrc(&RD_buf[0]));
++	printf("  Vendor ID        : %8.8X\n", *(uint32 *)(wbuf + 0x08));
++	printf("  Product Code     : %8.8X\n", *(uint32 *)(wbuf + 0x0A));
++	printf("  Revision Number  : %8.8X\n", *(uint32 *)(wbuf + 0x0C));
++	printf("  Serial Number    : %8.8X\n", *(uint32 *)(wbuf + 0x0E));
++	printf("  Mailbox Protocol : %4.4X\n", *(wbuf + 0x1C));
++}
++
++/** Read a binary file programming the Ecat controller's eeprom content
++ *
++ * @param[in] *filename = pointer to bin file to read (int the forlder is main program)
++ * @param[in] verbose = print additional info
++ * @return the number of byte read
++ */
++int read_input_bin(char *filename, boolean verbose)
++{
++	FILE *fp;
++	int filesize, c;
++	uint16 *buf_ptr;
++
++	// open the file as binary input; exit on error
++	fp = fopen(filename, "rb");
++	if (fp == NULL) exit_on_error(fileRD, filename);
++
++	// read the file and copy it into a local buffer
++	filesize = 0;
++	while (((c = fgetc(fp)) != EOF) && (filesize < MAXBUF)) WR_buf[filesize++] = (uint8)c;
++
++	fclose(fp);
++
++	// exit if the bin file is empty of if the local buffer is too small
++	if (filesize == 0) exit_on_error(fileEmpty, NULL);
++	if (filesize >= MAXBUF) exit_on_error(bufferSMALL, NULL);
++
++	// print some interesting data 
++	if (verbose)
++	{
++		buf_ptr = (uint16 *)&(WR_buf[0]);
++		printf("  Vendor ID       : %8.8X\n", *(uint32 *)(buf_ptr + 0x08));
++		printf("  Product Code    : %8.8X\n", *(uint32 *)(buf_ptr + 0x0A));
++		printf("  Revision Number : %8.8X\n", *(uint32 *)(buf_ptr + 0x0C));
++		printf("  Serial Number   : %8.8X\n", *(uint32 *)(buf_ptr + 0x0E));
++	}
++
++	return filesize;
++}
++
++/** Programs the Ecat controller's eeprom, measuring the elapsed time
++ *
++ * @param[in] filesize =  number of byte to write
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void write_input_bin(int filesize, boolean verbose)
++{
++	ec_timet tstart, tend, tdif;
++
++	if (verbose) printf("Busy \n");
++
++	fflush(stdout);
++	tstart = osal_current_time();
++
++	eeprom_write(0, filesize);
++
++	tend = osal_current_time();
++	osal_time_diff(&tstart, &tend, &tdif);
++
++	if (verbose) printf("Total EEPROM write time is %ldms \n", (tdif.usec + (tdif.sec * 1000000L)) / 1000);
++}
++
++/** Compares the local buffers containing data writted in and read from Ecat controller's eeprom
++ *
++ * @param[in] filesize =  number of byte to compare
++ * @param[in] verbose = print additional info
++ * @return none
++ */
++void eeprom_compare(int filesize, boolean verbose)
++{
++	int i, count_diff;
++
++	// check if compare no data or too much data
++	if (filesize >= MAXBUF) exit_on_error(bufferSMALL, NULL);
++	if (filesize <= 0) exit_on_error(fileEmpty, NULL);
++
++	if (verbose) printf("Comparing %d write/read data \n", filesize);
++
++	// compares the read buffer with the write buffer
++	count_diff = 0;
++	for (i = 0; i < filesize; i++)
++	{
++		if (RD_buf[i] != WR_buf[i]) count_diff++;
++	}
++
++	// print PASS/FAIL if buffers content is the same or different
++	if (count_diff == 0) printf("PASS \n");
++	else				 printf("FAIL \n");
++}
++
++/** Test for WAM board
++ *
++ * @param[in] *args = command line arguments
++ * @return none
++ */
++void wam_ecat_test(Args_T *args)
++{
++	int filesize = 0;
++
++	// open the network interface connected to port 0 (Ecat IN)
++	open_connection(args->if0_name, args->verbose);
++
++	// set the DLCTL controller register to force the opening of port 0 (Ecat IN) and closing of port 1 (Ecat OUT)
++	set_dlctl(openIN_closeOUT, args->verbose);
++
++	// get_dlstat(args->verbose);
++
++	// Send the broadcast message to enumerate the Ecat slave 
++	send_broadcast(args->verbose);
++
++	if (args->mode == mode_read_read) // read the Ecat controller's eeprom and print the main data (from Ecat IN)
++	{
++		eeprom_read(0, MINBUF);
++		print_eepprom_data();
++	}
++	else if (args->mode == mode_write_read) // read the binary file and program the Ecat controller's eeprom (from Ecat IN)
++	{
++		filesize = read_input_bin(args->filename, args->verbose);
++		write_input_bin(filesize, args->verbose);
++	}
++	else exit_on_error(unknown, NULL);
++
++	// set the DLCTL controller register to force the closing of port 0 (Ecat IN) and opening of port 1 (Ecat OUT)
++	set_dlctl(closeIN_openOUT, args->verbose);
++
++	// close the network interface connected to port 0 (Ecat IN) and open the network interface connected to port 1 (Ecat OUT)
++	close_connection(args->if0_name, args->verbose);
++	usleep(500000);
++	open_connection(args->if1_name, args->verbose);
++
++	// get_dlstat(args->verbose);
++
++	// wkc = send_broadcast(args->verbose);
++
++	if (args->mode == mode_read_read) // read the Ecat controller's eeprom and print the main data (from Ecat OUT)
++	{
++		eeprom_read(0, MINBUF);
++		if (args->verbose == FALSE) printf("\n");
++		print_eepprom_data();
++	}
++	else if (args->mode == mode_write_read) // read the Ecat controller's eeprom and compare with the previous programmed data (from Ecat OUT)
++	{
++		eeprom_read(0, filesize);
++		eeprom_compare(filesize, args->verbose);
++	}
++	else exit_on_error(unknown, NULL);
++
++	// set the DLCTL controller register to force the opening of port 0 (Ecat IN) and port 1 (Ecat OUT)
++	set_dlctl(resetIN_resetOUT, args->verbose);
++
++	// close the network interface connected to port 1 (Ecat OUT)
++	close_connection(args->if0_name, args->verbose);
++}
+-- 
+2.17.1
+

@@ -4,7 +4,9 @@ LICENSE = "CLOSED"
 inherit cmake
 
 SRC_URI = "git://github.com/OpenEtherCATsociety/SOEM.git;protocol=https;branch=master \
+		   file://0001-wam-ecat-test.patch \
 		   file://eeprom_ax58100.bin"
+
 
 SRCREV = "${AUTOREV}"
 PV = "1.4.0+gitr${SRCPV}"
